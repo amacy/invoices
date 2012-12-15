@@ -1,0 +1,27 @@
+Aaron Macy                                                 INVOICE #0001
+31 Angell Ct                                                  12/14/2012
+Apt 106                                                                 
+Stanford, CA 94305                                                      
+(207) 756-9457                                                          
+                                                                        
+                                                                        
+                                                                        
+BILL TO:                                                                
+Some Person                                                             
+A St                                                                    
+San Francisco                                                           
+CA                                                                      
+SOMA                                                                    
+(555) 555-5555                                                          
+                                                                        
+                                                                        
+----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +
+                                                                        
+    +          + version 1
+    +          + Merge made by the 'recursive' strategy.
+    +          + moving from master to coffee
+    +          + working draft written in coffeescript
+    +          + removed .js from version control; update
+                                                                        
+----+----------+------------------------------------------+-----+------+
+TOTALS:                                                   +     +      +
