@@ -3,23 +3,21 @@ Aaron Macy                                                 INVOICE #0001
 Apt 106                                                                 
 Stanford, CA 94305                                                      
 (207) 756-9457                                                          
-                                                                        
-                                                                        
-                                                                        
+
+
+
 BILL TO:                                                                
 Peter Simon                                                             
 Wisteria Rd                                                             
 Chilmark, MA 02568                                                      
 555-555-5555                                                            
-                                                                        
-                                                                        
+
+
 ----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +
-                                                                        
-    +          + version 1
-    +          + Merge made by the 'recursive' strategy.
-    +          + moving from master to coffee
-    +          + working draft written in coffeescript
-    +          + removed .js from version control; update
-                                                                        
+
+1 + 8/30/2012(initial): version 1 + .520
+2 + 11/11/1274c62619d0a7c5202d2efef1f31ee6734c7e087a + .520
+3 + 11/11/12488d374a003d9cf48d653347eb97b7ec176be7b0 + .520
+
 ----+----------+------------------------------------------+-----+------+
 TOTALS:                                                   +     +      +
