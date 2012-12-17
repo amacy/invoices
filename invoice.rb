@@ -9,7 +9,7 @@ require_relative "layout"
 db = SQLite3::Database.new "test.db"
 
 begin
-# Create biller records
+# Create biller table
 biller_table = db.execute <<-SQL
   create table billers (
     name varchar(30),
@@ -21,8 +21,7 @@ biller_table = db.execute <<-SQL
     phone varchar(14)
   );
 SQL
-
-# Create client records
+# Create client table
 client_table = db.execute <<-SQL
   create table clients (
     name varchar(30),
@@ -35,10 +34,24 @@ client_table = db.execute <<-SQL
     rate int
   );
 SQL
+=begin
+# Create invoice table
+invoice_table = db.execute <<-SQL
+  create table invoices (
+    number int,
+    date varchar(10)
+    client_id int,
+    commit_date varchar(8),
+    commit_msg varchar(40),
+    hrs int,
+    rate int
+  );
+SQL
+=end
 rescue SQLite3::SQLException
 end
 
-# Collect user data @ the command line
+#--------- Begin CL prompts ---------#
 puts "Would you like to enter your information? (y/n)"
 if gets.chomp == "y"
   puts "your name >"
@@ -91,7 +104,6 @@ end
 # Generate a new invoice
 puts "Would you like to create a new invoice? (y/n)"
 if gets.chomp == "y"
-
   #--------------- RETRIEVE DATA FROM DB --------------#
   biller = db.execute("select * from billers").first
   client = db.execute("select * from clients").first
@@ -119,13 +131,13 @@ if gets.chomp == "y"
     header.line(client[6].to_s, "") +
     "\n" * 2
   
-
   #--------------- INVOICE ITEMS -----------------#
 
   # puts "Where is the project root?"
   # root = gets.chomp
 
   history = IO.readlines('/Users/aaronmacy/projects/button/.git/logs/HEAD')
+  dates   = IO.readlines('/Users/aaronmacy/projects/button/.git/logs/HEAD')
   
   def convert_date(timestamp) 
     DateTime.strptime(timestamp, '%s')
@@ -145,6 +157,24 @@ if gets.chomp == "y"
   commit2 = history[1].split(/commit/).last.strip.slice(0, 40)
   commit3 = history[2].split(/commit/).last.strip.slice(0, 40)
 
+=begin
+  history.map! do |commit|
+    if commit.include?("commit")
+      commit.split(/commit/).last.delete(":").strip.slice(0, 40)
+    end
+  end
+  history.keep_if { |v| v != nil }
+  line_items_count = history.length
+  line1 = nil
+  line2 = nil
+  line3 = nil
+  i = 0
+  while i < line_items_count
+    i += 1
+    @line = "line" + i.to_s
+    @line = Grid.new.line(" #{i} ", " ", history[i - 1], ".5", client[7].to_s)
+  end
+=end
 
   grid = Grid.new
   line1 = grid.line(" 1 ", date1, commit1, ".5 ", client[7].to_s)

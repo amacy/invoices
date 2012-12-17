@@ -42,7 +42,6 @@ class Grid < Format
   end
 
   def date
-    
   end
 
   def msg
