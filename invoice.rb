@@ -1,4 +1,8 @@
+# Third party files
 require "sqlite3"
+
+# Additional app files
+require_relative "layout"
 
 # ------------ DATABASE ------------#
 # Open a database
@@ -58,50 +62,37 @@ if gets.chomp == "y"
                                                 userphone])
 end
 
+# Collect client data @ the command line
 puts "Would you like to add a client to the database? (y/n)"
-  if gets.chomp == "y"
-    puts "client name >"
-    clientname = gets.chomp
-    puts "street1 >"
-    clientstreet1 = gets.chomp
-    puts "street2 >"
-    clientstreet2 = gets.chomp
-    puts "city >"
-    clientcity = gets.chomp
-    puts "state (2 letters) >"
-    clientstate = gets.chomp
-    puts "zip (5 digits) >"
-    clientzip = gets.chomp
-    puts "phone >"
-    clientphone = gets.chomp
-    puts "hourly rate you'll charge this client >"
-    clientrate = gets.chomp
-    # Store the data
-    db.execute("INSERT INTO clients (name, street1, street2, city, state, zip, phone, rate)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [clientname, clientstreet1, clientstreet2, 
-                                                  clientcity, clientstate, clientzip, 
-                                                  clientphone, clientrate])
-  end
+if gets.chomp == "y"
+  puts "client name >"
+  clientname = gets.chomp
+  puts "street1 >"
+  clientstreet1 = gets.chomp
+  puts "street2 >"
+  clientstreet2 = gets.chomp
+  puts "city >"
+  clientcity = gets.chomp
+  puts "state (2 letters) >"
+  clientstate = gets.chomp
+  puts "zip (5 digits) >"
+  clientzip = gets.chomp
+  puts "phone >"
+  clientphone = gets.chomp
+  puts "hourly rate you'll charge this client >"
+  clientrate = gets.chomp
+  # Store the data
+  db.execute("INSERT INTO clients (name, street1, street2, city, state, zip, phone, rate)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [clientname, clientstreet1, clientstreet2, 
+                                                clientcity, clientstate, clientzip, 
+                                                clientphone, clientrate])
+end
 
+# Generate a new invoice
 puts "Would you like to create a new invoice? (y/n)"
-  if gets.chomp == "y"
-  #-------------- FORMATTING ------------#
-  # Generate a basic invoice
-  def space(chars)
-    " " * (72 - chars)
-  end
-
-  def line(left, right)
-    @space = space(left.length + right.length)
-    left + @space + right + "\n"
-  end
-
-  def empty_line
-    line(" ", " ")
-  end
+if gets.chomp == "y"
 
   #--------------- RETRIEVE DATA FROM DB --------------#
-
   biller = db.execute("select * from billers").first
   client = db.execute("select * from clients").first
 
@@ -126,16 +117,16 @@ puts "Would you like to create a new invoice? (y/n)"
 
   #--------------- INVOICE ITEMS -----------------#
 
+  # puts "Where is the project root?"
+  # root = gets.chomp
+
   history = IO.readlines('/Users/aaronmacy/projects/button/.git/logs/HEAD')
 
-  border_top    = "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + "\n"
   line_item0    = "    +          + " + history[0].split(/: /).last.strip.slice(0, 40) + "\n"
   line_item1    = "    +          + " + history[1].split(/: /).last.strip.slice(0, 40) + "\n"
   line_item2    = "    +          + " + history[2].split(/: /).last.strip.slice(0, 40) + "\n"
   line_item3    = "    +          + " + history[3].split(/: /).last.strip.slice(0, 40) + "\n"
   line_item4    = "    +          + " + history[4].split(/: /).last.strip.slice(0, 40) + "\n"
-  border_bottom = "----+----------+------------------------------------------+-----+------+" + "\n"
-  total         = "TOTALS:                                                   +     +      +" + "\n"
 
   invoice_items = border_top + 
                   empty_line + 
