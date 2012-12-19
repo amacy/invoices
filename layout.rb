@@ -1,7 +1,24 @@
 class Invoice < String
+  def db
+    SQLite3::Database.new "test.db"
+  end
+  def date
+    time = Time.now
+    time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
+  end
+  def format_number(x)
+    if x >=  1 && x < 10 then "000#{x}"
+    elsif x >= 10 && x < 100 then "00#{x}"
+    elsif x >= 100 && x < 1000 then "0#{x}"
+    elsif x >= 100 && x < 10000 then "#{x}"
+    # raise an exception for x >= 10000
+    end
+  end
+  def generate_number
+  end
 end
 
-class Format < Invoice
+class Header < Invoice
   def space(chars)
     " " * (72 - chars) # 72 chars in page width was, traditionally, the most common
   end
@@ -9,12 +26,61 @@ class Format < Invoice
     @space = space(left.length + right.length)
     left + @space + right + "\n"
   end
+  def format(num, date, biller, client)
+    line("INVOICE #" + num, date) +
+    "\n" +
+    biller +
+    "\n" * 2 +
+    line("BILL TO:", "") +
+    client +
+    "\n" * 2
+  end
 end
 
-class Header < Format
+class Biller < Header
+  def get_row
+    db.execute("select * from billers").first
+  end
+  def name
+    get_row[0].to_s
+  end
+  def street1
+    get_row[1].to_s
+  end
+  def street2
+    get_row[2].to_s
+  end
+  def city
+    get_row[3].to_s
+  end
+  def state
+    get_row[4].to_s
+  end
+  def zip
+    get_row[5].to_s
+  end
+  def phone
+    get_row[6].to_s
+  end
+  def address
+    line(name, " ") +
+    line(street1, " ") + 
+    line(street2, " ") +  
+    line(city + ", " + state + " " + zip, " ") + 
+    line(phone, " ") 
+  end
 end
 
-class Grid < Format
+class Client < Biller
+  def get_row
+    db.execute("select * from clients").first
+  end
+  def rate
+    get_row[7].to_s
+  end
+end
+
+class Grid < Invoice
   def border_top
     "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + "\n"
   end
@@ -27,7 +93,6 @@ class Grid < Format
   def divider
     " + "
   end
-  # Process the commits
   def commits(file)
     i = 0
     file.map do |line|
@@ -35,6 +100,14 @@ class Grid < Format
       commit = Commit.new
       LineItem.new.compile(commit.item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate("50"))
     end
+  end
+  def format(git_input)
+    border_top + 
+    "\n" +
+    commits(git_input).join("\n") +
+    "\n" * 2 +
+    border_bottom + 
+    total
   end
 end
 
