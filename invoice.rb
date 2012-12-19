@@ -170,3 +170,11 @@ if gets.chomp == "y"
     f.write(header_lines + grid_lines)
   end
 end
+
+## TO DO LIST
+#
+#  - Input hours field at CL
+#  - Input directory at CL
+#  - Improve slicing of commit messages
+#  - Raise errors where noted (in comments)
+#  - Move header stuffs to objects

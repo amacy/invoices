@@ -29,27 +29,34 @@ class Grid < Format
   end
   # Process the commits
   def commits(file)
+    i = 0
     file.map do |line|
+      i += 1
       commit = Commit.new
-      LineItem.new.compile(" 1 ", commit.date(line), commit.msg(line), ".5 ", "50")
-    end
-  end
-
-  def compare_length(string, max)
-    if string.length != max
-      diff = max - string
-      diff * " "
+      LineItem.new.compile(commit.item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate("50"))
     end
   end
 end
 
 class LineItem < Grid
-  def n
+  def compare_length(string, max_length)
+    # raise an error if string.length < 0 || string.length > max_length
+    if string.length < max_length
+      difference = 0
+      difference = max_length - string.length
+      string + (" " * difference)
+    else
+      string
+    end
   end
-  def rate
+  def item_number(n)
+    compare_length(n, 3)
+  end
+  def rate(amt)
+    compare_length(amt, 4)
   end
   def compile(n, date, msg, hrs, rate)
-    n + divider + date + msg + divider + hrs + rate
+    n + divider + date + divider + msg + divider + hrs + divider + rate
   end
 end
 
@@ -57,11 +64,14 @@ class Commit < LineItem
   def date(line)
     timestamp = line.split(/> /).last.slice(0, 10)
     timestamp = DateTime.strptime(timestamp, '%s')
-    timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s
+    timestamp = timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s.slice(0, 2)
+    compare_length(timestamp, 8)
   end
   def msg(line)
-    line.split(/commit/).last.strip.slice(0, 40) # We only have 40 chars 
-  end                                            # width on the invoice
-  def hrs
+    line = line.split(/commit/).last.strip.slice(0, 40)
+    compare_length(line, 40)
+  end                                            
+  def hrs(h)
+    compare_length(h, 3)
   end
 end
