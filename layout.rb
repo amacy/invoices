@@ -5,7 +5,6 @@ class Format < Invoice
   def space(chars)
     " " * (72 - chars) # 72 chars in page width was, traditionally, the most common
   end
-
   def line(left, right)
     @space = space(left.length + right.length)
     left + @space + right + "\n"
@@ -19,15 +18,12 @@ class Grid < Format
   def border_top
     "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + "\n"
   end
-
   def border_bottom
     "----+----------+------------------------------------------+-----+------+" + "\n"
   end
-
   def total
     "TOTALS:                                                   +     +      +" + "\n"
   end
-
   def divider
     " + "
   end
@@ -50,10 +46,8 @@ end
 class LineItem < Grid
   def n
   end
-
   def rate
   end
-
   def compile(n, date, msg, hrs, rate)
     n + divider + date + msg + divider + hrs + rate
   end
@@ -65,11 +59,9 @@ class Commit < LineItem
     timestamp = DateTime.strptime(timestamp, '%s')
     timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s
   end
-
   def msg(line)
     line.split(/commit/).last.strip.slice(0, 40) # We only have 40 chars 
   end                                            # width on the invoice
-
   def hrs
   end
 end

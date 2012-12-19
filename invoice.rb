@@ -109,15 +109,33 @@ if gets.chomp == "y"
   client = db.execute("select * from clients").first
 
   # -------------- HEADER --------------#
-  number  = "#" + "0001"
-  invoice = "INVOICE " + number
-  time    = Time.now
-  date    = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
+  # Generate invoice number & name the file after it
+  def number(x)
+    if x >=  1 && x < 10 then "000#{x}"
+    elsif x >= 10 && x < 100 then "00#{x}"
+    elsif x >= 100 && x < 1000 then "0#{x}"
+    elsif x >= 100 && x < 10000 then "#{x}"
+    # raise an exception for x >= 10000
+    end
+  end
+
+  i = 1
+  Dir.foreach(File.dirname(__FILE__)) do |filename|
+    if filename == "invoice#{number(i)}.txt"
+      i += 1
+    else
+      number(i)
+    end
+  end
+  
+  # Get the date
+  time = Time.now
+  date = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
 
   header = Header.new
 
   header_lines = 
-    header.line(biller[0].to_s, invoice) +
+    header.line(biller[0].to_s, "INVOICE #" + number(i)) +
     header.line(biller[1].to_s, date) + 
     header.line(biller[2].to_s, " ") + 
     header.line(biller[3].to_s + ", " + biller[4].to_s + " " + biller[5].to_s, " ") + 
@@ -131,7 +149,7 @@ if gets.chomp == "y"
     header.line(client[6].to_s, "") +
     "\n" * 2
   
-  #--------------- INVOICE ITEMS -----------------#
+  #--------------- GRID OF LINE ITEMS -----------------#
 
   # puts "Where is the project root?"
   # root = gets.chomp
@@ -148,7 +166,7 @@ if gets.chomp == "y"
                grid.total
 
   #--------------- WRITE THE FILE ----------------#
-  File.open("invoice0001.txt", 'w') do |f|
+  File.open("invoice#{number(i)}.txt", 'w') do |f|
     f.write(header_lines + grid_lines)
   end
 end

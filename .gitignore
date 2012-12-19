@@ -1,3 +1,7 @@
+# Files that do nothing
 *.swp
 *.swo
 *.DS_Store
+
+# Invoices
+*.txt
