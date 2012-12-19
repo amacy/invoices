@@ -137,56 +137,13 @@ if gets.chomp == "y"
   # root = gets.chomp
 
   history = IO.readlines('/Users/aaronmacy/projects/button/.git/logs/HEAD')
-  dates   = IO.readlines('/Users/aaronmacy/projects/button/.git/logs/HEAD')
-  
-  def convert_date(timestamp) 
-    DateTime.strptime(timestamp, '%s')
-  end
-  
-  timestamp1 = history[0].split(/> /).last.slice(0, 10)
-  timestamp2 = history[1].split(/> /).last.slice(0, 10)
-  timestamp3 = history[2].split(/> /).last.slice(0, 10)
-  date1 = convert_date(timestamp1)
-  date1 = date1.month.to_s + "/" + date1.day.to_s + "/" + date1.year.to_s
-  date2 = convert_date(timestamp2)
-  date2 = date2.month.to_s + "/" + date2.day.to_s + "/" + date2.year.to_s  
-  date3 = convert_date(timestamp3)
-  date3 = date3.month.to_s + "/" + date3.day.to_s + "/" + date3.year.to_s  
-
-  commit1 = history[0].split(/commit/).last.strip.slice(0, 40)
-  commit2 = history[1].split(/commit/).last.strip.slice(0, 40)
-  commit3 = history[2].split(/commit/).last.strip.slice(0, 40)
-
-=begin
-  history.map! do |commit|
-    if commit.include?("commit")
-      commit.split(/commit/).last.delete(":").strip.slice(0, 40)
-    end
-  end
-  history.keep_if { |v| v != nil }
-  line_items_count = history.length
-  line1 = nil
-  line2 = nil
-  line3 = nil
-  i = 0
-  while i < line_items_count
-    i += 1
-    @line = "line" + i.to_s
-    @line = Grid.new.line(" #{i} ", " ", history[i - 1], ".5", client[7].to_s)
-  end
-=end
+  history.keep_if { |line| line.include?("commit") }
 
   grid = Grid.new
-  line1 = grid.line(" 1 ", date1, commit1, ".5 ", client[7].to_s)
-  line2 = grid.line(" 2 ", date2, commit2, ".5 ", client[7].to_s)
-  line3 = grid.line(" 3 ", date3, commit3, ".5 ", client[7].to_s)
-
   grid_lines = grid.border_top + 
-               "\n" + 
-               line1 +
-               line2 + 
-               line3 + 
                "\n" +
+               grid.commits(history).join("\n") +
+               "\n" * 2 +
                grid.border_bottom + 
                grid.total
 

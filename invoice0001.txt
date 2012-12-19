@@ -1,5 +1,5 @@
 Aaron Macy                                                 INVOICE #0001
-31 Angell Ct                                                  12/17/2012
+31 Angell Ct                                                  12/18/2012
 Apt 106                                                                 
 Stanford, CA 94305                                                      
 (207) 756-9457                                                          
@@ -15,9 +15,9 @@ Chilmark, MA 02568
 
 ----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +
 
- 1  + 8/30/2012(initial): version 1 + .5 20
- 2  + 8/30/201274c62619d0a7c5202d2efef1f31ee6734c7e087a + .5 20
- 3  + 12/10/2012488d374a003d9cf48d653347eb97b7ec176be7b0 + .5 20
+ 1  + 8/30/2012(initial): version 1 + .5 50
+ 1  + 12/10/2012: working draft written in coffeescript + .5 50
+ 1  + 12/11/2012: removed .js from version control; upda + .5 50
 
 ----+----------+------------------------------------------+-----+------+
 TOTALS:                                                   +     +      +

@@ -1,5 +1,7 @@
-#---- GRID HELPER METHODS ----#
-class Format < String
+class Invoice < String
+end
+
+class Format < Invoice
   def space(chars)
     " " * (72 - chars) # 72 chars in page width was, traditionally, the most common
   end
@@ -29,6 +31,13 @@ class Grid < Format
   def divider
     " + "
   end
+  # Process the commits
+  def commits(file)
+    file.map do |line|
+      commit = Commit.new
+      LineItem.new.compile(" 1 ", commit.date(line), commit.msg(line), ".5 ", "50")
+    end
+  end
 
   def compare_length(string, max)
     if string.length != max
@@ -36,24 +45,31 @@ class Grid < Format
       diff * " "
     end
   end
+end
 
+class LineItem < Grid
   def n
-    1
-  end
-
-  def date
-  end
-
-  def msg
-  end
-
-  def hrs
   end
 
   def rate
   end
 
-  def line(n, date, msg, hrs, rate)
-    n + divider + date + msg + divider + hrs + rate + "\n"
+  def compile(n, date, msg, hrs, rate)
+    n + divider + date + msg + divider + hrs + rate
+  end
+end
+
+class Commit < LineItem
+  def date(line)
+    timestamp = line.split(/> /).last.slice(0, 10)
+    timestamp = DateTime.strptime(timestamp, '%s')
+    timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s
+  end
+
+  def msg(line)
+    line.split(/commit/).last.strip.slice(0, 40) # We only have 40 chars 
+  end                                            # width on the invoice
+
+  def hrs
   end
 end
