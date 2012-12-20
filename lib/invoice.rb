@@ -2,6 +2,46 @@ class Invoice < String
   def db
     SQLite3::Database.new "test.db"
   end
+  def create_biller_table
+    db.execute <<-SQL
+      create table billers (
+        name varchar(30),
+        street1 varchar(30),
+        street2 varchar(30),
+        city varchar(30),
+        state varchar(2),
+        zip varchar(5),
+        phone varchar(14)
+      );
+    SQL
+  end
+  def create_client_table
+    db.execute <<-SQL
+      create table clients (
+        name varchar(30),
+        street1 varchar(30),
+        street2 varchar(30),
+        city varchar(30),
+        state varchar(2),
+        zip varchar(5),
+        phone varchar(14),
+        rate int
+      );
+    SQL
+  end
+  def create_invoice_table # not being used
+    db.execute <<-SQL
+      create table invoices (
+        number int,
+        date varchar(10)
+        client_id int,
+        commit_date varchar(8),
+        commit_msg varchar(40),
+        hrs int,
+        rate int
+      );
+    SQL
+  end
   def date
     time = Time.now
     time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
@@ -20,8 +60,8 @@ end
 
 class Header < Invoice
   def space(chars)
-    " " * (72 - chars) # 72 chars in page width was, traditionally, the most common
-  end
+    " " * (72 - chars) # 72 chars in page width was, 
+  end                  # traditionally, the most common
   def line(left, right)
     @space = space(left.length + right.length)
     left + @space + right + "\n"
@@ -75,7 +115,7 @@ class Client < Biller
   def get_row
     db.execute("select * from clients").first
   end
-  def rate
+  def default_rate
     get_row[7].to_s
   end
 end
@@ -93,18 +133,10 @@ class Grid < Invoice
   def divider
     " + "
   end
-  def commits(file)
-    i = 0
-    file.map do |line|
-      i += 1
-      commit = Commit.new
-      LineItem.new.compile(commit.item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate("50"))
-    end
-  end
   def format(git_input)
     border_top + 
     "\n" +
-    commits(git_input).join("\n") +
+    Commit.new.index(git_input, true).join("\n") +
     "\n" * 2 +
     border_bottom + 
     total
@@ -125,6 +157,9 @@ class LineItem < Grid
   def item_number(n)
     compare_length(n, 3)
   end
+  def hrs(h)
+    compare_length(h, 3)
+  end
   def rate(amt)
     compare_length(amt, 4)
   end
@@ -141,10 +176,23 @@ class Commit < LineItem
     compare_length(timestamp, 8)
   end
   def msg(line)
-    line = line.split(/commit/).last.strip.slice(0, 40)
+    if line.include?("commit:")
+      line = line.split(/commit:/).last.strip.slice(0, 40)
+    elsif line.include?("commit (initial):")
+      line = line.split(/commit \(initial\):/).last.strip.slice(0, 40)
+    end
     compare_length(line, 40)
-  end                                            
-  def hrs(h)
-    compare_length(h, 3)
+  end
+  def index(file, boolean)
+    i = 0
+    file.map do |line|
+      i += 1
+      commit = Commit.new
+      if boolean == true # Compile the commits into a LineItem
+        LineItem.new.compile(commit.item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate("50"))
+      else # Return a simple list of commits
+        commit.msg(line)
+      end
+    end
   end
 end

@@ -1,52 +1,14 @@
 # Third party files
 require "sqlite3"
-
 # Additional app files
-require_relative "layout"
+require_relative "lib/invoice"
+require_relative "lib/user_input"
 
-invoice = Invoice.new
-invoice.db
-
+invoice = Invoice.new # Generate a new invoice
+invoice.db # Find/create the db
 begin
-# Create biller table
-biller_table = invoice.db.execute <<-SQL
-  create table billers (
-    name varchar(30),
-    street1 varchar(30),
-    street2 varchar(30),
-    city varchar(30),
-    state varchar(2),
-    zip varchar(5),
-    phone varchar(14)
-  );
-SQL
-# Create client table
-client_table = invoice.db.execute <<-SQL
-  create table clients (
-    name varchar(30),
-    street1 varchar(30),
-    street2 varchar(30),
-    city varchar(30),
-    state varchar(2),
-    zip varchar(5),
-    phone varchar(14),
-    rate int
-  );
-SQL
-=begin
-# Create invoice table
-invoice_table = db.execute <<-SQL
-  create table invoices (
-    number int,
-    date varchar(10)
-    client_id int,
-    commit_date varchar(8),
-    commit_msg varchar(40),
-    hrs int,
-    rate int
-  );
-SQL
-=end
+  invoice.create_biller_table
+  invoice.create_client_table
 rescue SQLite3::SQLException
 end
 
@@ -103,7 +65,6 @@ end
 # Generate a new invoice?
 puts "Would you like to create a new invoice? (y/n)"
 if gets.chomp == "y"
-  # Generate invoice number & name the file after it
   invoice_number = 0
   i = 1
   Dir.foreach(File.dirname(__FILE__)) do |filename|
@@ -118,22 +79,58 @@ if gets.chomp == "y"
   client = Client.new
   header = Header.new.format(invoice_number, invoice.date, biller.address, client.address)
   
-  # puts "Where is the project root?"
-  # root = gets.chomp
-  history = IO.readlines('/Users/aaronmacy/projects/button/.git/logs/HEAD')
+  puts "Where is the project root (the parent directory of the git repo)?"
+  root = File.expand_path(gets.chomp) # Allow relative directories
+  if root[-1] == "/" then root.slice!(0..root.length) end # Remove trailing slash
+
+  history = IO.readlines("#{root}/.git/logs/HEAD")
   history.keep_if { |line| line.include?("commit") }
+
+  puts "Would you like to enter a different rate for each commit? (y/n)"
+  rate_boolean = gets.chomp
+  commit_list = Commit.new.index(history, false)
+  i = 0
+  commits = []
+  hours = []
+  if rate_boolean == true
+    commit_list.each do |commit|
+      i += 1
+      puts "\n" + "commit #{i}: " + commit
+      puts "how long did this take?"
+      commits[i] = gets.chomp
+      puts "how much will you charge?"
+      rates[i] = gets.chomp
+    end
+  else
+    commit_list.each do |commit|
+      i += 1
+      puts "\n" + "commit #{i}: " + commit
+      puts "how long did this take?"
+      hours[i] = gets.chomp
+    end
+  end
 
   grid = Grid.new.format(history)
 
-  puts "generated invoice#{invoice_number}.txt" if File.open("invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
+  File.open("invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
+  puts "generated invoice#{invoice_number}.txt"
+else
+  puts "quitting..."
 end
 
 ## TO DO LIST
-#  - Input hours field at CL
-#  - Input directory at CL
-#  - Improve slicing of commit messages
+#  - Input hours at CL
+#  - Input rate at CL
+#  - Allow commit messages to be multiple lines
 #  - Raise errors where noted (in comments)
-#  - Move header stuffs to objects
 #  - Totals
 #  - Allow queries for multiple billers/clients
+#  - Allow multiple git repos per invoice
 #  - Don't print street2 when it has nc
+#  - Provide control over which commits get added to the invoice
+#  - Invoice.generate_number
+#  - Create CLI object?
+#  - Improved CLI (move cursor left; quit button; enter commands)
+#  - Turn into rubygem
+#  - Store invoices to database?
+#  - Fix Commit.index
