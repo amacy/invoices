@@ -134,3 +134,4 @@ end
 #  - Turn into rubygem
 #  - Store invoices to database?
 #  - Fix Commit.index
+#  - Write tests
