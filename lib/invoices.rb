@@ -75,25 +75,25 @@ if gets.chomp == "y"
 
   puts "Would you like to enter a different rate for each commit? (y/n)"
   rate_boolean = gets.chomp
-  commit_list = Commit.new.index(history)
+  commits_hash = Commit.new.index(history)
   i = 0
-  commits = []
-  hours = []
+  commit_msgs_array = []
+  rates = []
   if rate_boolean == true
-    commit_list.each do |commit|
+    commits_hash.each_value do |commit|
       i += 1
       puts "\n" + "commit #{i}: " + commit
       puts "how long did this take?"
-      commits[i] = gets.chomp
+      commit_msgs_array[i] = gets.chomp
       puts "how much will you charge?"
       rates[i] = gets.chomp
     end
   else
-    commit_list.each do |commit|
+    commits_hash.each_value do |commit|
       i += 1
       puts "\n" + "commit #{i}: " + commit
       puts "how long did this take?"
-      hours[i] = gets.chomp
+      rates[i] = gets.chomp
     end
   end
 
@@ -119,7 +119,7 @@ end
 #  - Improved CLI (move cursor left; quit button; enter commands)
 #  - Turn into rubygem
 #  - Store invoices to database?
-#  - Fix Commit.index & LineItem.index
 #  - Write tests
 #  - Improve CLI (rather than running a file in Ruby, enter commands by typing "invoices")
 #  - Allow users to select where they want their invoices to be stored
+#  - Implement MVC code organization

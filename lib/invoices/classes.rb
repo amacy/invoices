@@ -154,10 +154,10 @@ class Grid < Invoice
   def divider
     " + "
   end
-  def format(git_input)
+  def format(git_file)
     border_top + 
     "\n" +
-    LineItem.new.index(git_input).join("\n") + # Should be LineItem.new.index
+    LineItem.new.index(git_file).join("\n") +
     "\n" * 2 +
     border_bottom + 
     total
@@ -193,10 +193,11 @@ class LineItem < Grid
   def compile(n, date, msg, hrs, rate)
     n + divider + date + divider + msg + divider + hrs + divider + rate
   end
-  def index(commits) # Should be an array of all LineItem.compile
+  def index(git_file)
     i = 0
-    commits.map do |commit|
+    git_file.map do |line|
       i += 1
+      commit = Commit.new
       LineItem.new.compile(item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate(Client.new.default_rate))
     end
   end
@@ -217,16 +218,21 @@ class Commit < LineItem
     end
     compare_length(line, 40)
   end
-  def index(file) # Should store commits only
+  def index(file)
+    # Takes a file as an array of lines and 
+    # returns a hash of date => msg pairs
     msgs = []
     dates = []
+    commits = {}
+    i = 0
     file.each do |line|
       commit = Commit.new
-      stripped_line = commit.msg(line)
-      msgs.push(stripped_line)
+      stripped_msg = commit.msg(line)
+      msgs.push(stripped_msg)
       stripped_date = commit.date(line)
       dates.push(stripped_date)
+      commits[dates[i]] = msgs[i]
     end
-    # Merge & turn into a hash that with :date => :msg k/v pairs
+    commits
   end
 end
