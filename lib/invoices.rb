@@ -75,7 +75,7 @@ if gets.chomp == "y"
 
   puts "Would you like to enter a different rate for each commit? (y/n)"
   rate_boolean = gets.chomp
-  commit_list = Commit.new.index(history, false)
+  commit_list = Commit.new.index(history)
   i = 0
   commits = []
   hours = []
