@@ -1,4 +1,4 @@
-require_relative "invoice"
+require_relative "classes"
 
 class UserInput < Invoice
   def receive_biller

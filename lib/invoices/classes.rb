@@ -29,6 +29,18 @@ class Invoice < String
       );
     SQL
   end
+  def add_row_to_biller_table(name, street1, street2, city, state, zip, phone)
+    db.execute("INSERT INTO billers 
+               (name, street1, street2, city, state, zip, phone) 
+               VALUES (?, ?, ?, ?, ?, ?, ?)", 
+               [name, street1, street2, city, state, zip, phone])
+  end
+  def add_row_to_client_table(name, street1, street2, city, state, zip, phone, rate)
+    db.execute("INSERT INTO clients 
+               (name, street1, street2, city, state, zip, phone, rate) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+               [name, street1, street2, city, state, zip, phone, rate])
+  end
   def create_invoice_table # not being used
     db.execute <<-SQL
       create table invoices (
@@ -54,7 +66,16 @@ class Invoice < String
     # raise an exception for x >= 10000
     end
   end
-  def generate_number
+  def number
+    i = 1
+    Dir.foreach(File.expand_path('~/invoices')) do |filename|
+      if filename.include?("invoice#{format_number(i)}.txt")
+        i += 1
+      else
+        format_number(i)
+      end
+    end
+    format_number(i)
   end
 end
 
@@ -136,10 +157,16 @@ class Grid < Invoice
   def format(git_input)
     border_top + 
     "\n" +
-    Commit.new.index(git_input, true).join("\n") +
+    Commit.new.index(git_input, true).join("\n") + # Should be LineItem.new.index
     "\n" * 2 +
     border_bottom + 
     total
+  end
+  def total_hrs
+
+  end
+  def total_rate
+    
   end
 end
 
@@ -166,6 +193,9 @@ class LineItem < Grid
   def compile(n, date, msg, hrs, rate)
     n + divider + date + divider + msg + divider + hrs + divider + rate
   end
+  def index # Should be an array of all LineItem.compile
+
+  end
 end
 
 class Commit < LineItem
@@ -183,13 +213,13 @@ class Commit < LineItem
     end
     compare_length(line, 40)
   end
-  def index(file, boolean)
+  def index(file, boolean) # Should store commits only
     i = 0
     file.map do |line|
       i += 1
       commit = Commit.new
       if boolean == true # Compile the commits into a LineItem
-        LineItem.new.compile(commit.item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate("50"))
+        LineItem.new.compile(commit.item_number(i.to_s), commit.date(line), commit.msg(line), commit.hrs(".5"), commit.rate(Client.new.default_rate))
       else # Return a simple list of commits
         commit.msg(line)
       end

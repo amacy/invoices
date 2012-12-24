@@ -1,80 +1,67 @@
 # Third party files
 require "sqlite3"
 # Additional app files
-require_relative "lib/invoice"
-require_relative "lib/user_input"
+require_relative "invoices/classes"
+require_relative "invoices/user_input"
 
-invoice = Invoice.new # Generate a new invoice
+invoice = Invoice.new
 invoice.db # Find/create the db
 begin
   invoice.create_biller_table
   invoice.create_client_table
 rescue SQLite3::SQLException
 end
+FOLDER = File.expand_path('~/invoices')
+unless File.directory?(FOLDER)
+  Dir.mkdir(FOLDER)
+end
 
 #--------- Begin CL prompts ---------#
 puts "Would you like to enter your information? (y/n)"
 if gets.chomp == "y"
   puts "your name >"
-  username = gets.chomp
+  user_name = gets.chomp
   puts "street1 >"
-  userstreet1 = gets.chomp
+  user_street1 = gets.chomp
   puts "street2 >"
-  userstreet2 = gets.chomp
+  user_street2 = gets.chomp
   puts "city >"
-  usercity = gets.chomp
+  user_city = gets.chomp
   puts "state (2 letters) >"
-  userstate = gets.chomp
+  user_state = gets.chomp
   puts "zip (5 digits) >"
-  userzip = gets.chomp
+  user_zip = gets.chomp
   puts "phone >"
-  userphone = gets.chomp
-  # Store the data
-  invoice.db.execute("INSERT INTO billers (name, street1, street2, city, state, zip, phone)
-             VALUES (?, ?, ?, ?, ?, ?, ?)", [username, userstreet1, userstreet2, 
-                                                usercity, userstate, userzip, 
-                                                userphone])
+  user_phone = gets.chomp
+  invoice.add_row_to_biller_table(user_name, user_street1, user_street2, user_city, user_state, user_zip, user_phone)
 end
 
 # Collect client data @ the command line
 puts "Would you like to add a client to the database? (y/n)"
 if gets.chomp == "y"
   puts "client name >"
-  clientname = gets.chomp
+  client_name = gets.chomp
   puts "street1 >"
-  clientstreet1 = gets.chomp
+  client_street1 = gets.chomp
   puts "street2 >"
-  clientstreet2 = gets.chomp
+  client_street2 = gets.chomp
   puts "city >"
-  clientcity = gets.chomp
+  client_city = gets.chomp
   puts "state (2 letters) >"
-  clientstate = gets.chomp
+  client_state = gets.chomp
   puts "zip (5 digits) >"
-  clientzip = gets.chomp
+  client_zip = gets.chomp
   puts "phone >"
-  clientphone = gets.chomp
+  client_phone = gets.chomp
   puts "hourly rate you'll charge this client >"
-  clientrate = gets.chomp
-  # Store the data
-  invoice.db.execute("INSERT INTO clients (name, street1, street2, city, state, zip, phone, rate)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [clientname, clientstreet1, clientstreet2, 
-                                                clientcity, clientstate, clientzip, 
-                                                clientphone, clientrate])
+  client_rate = gets.chomp
+  invoice.add_row_to_client_table(client_name, client_street1, client_street2, client_city, client_state, client_zip, client_phone, client_rate)
 end
 
 # Generate a new invoice?
 puts "Would you like to create a new invoice? (y/n)"
 if gets.chomp == "y"
-  invoice_number = 0
-  i = 1
-  Dir.foreach(File.dirname(__FILE__)) do |filename|
-    if filename == "invoice#{invoice.format_number(i)}.txt"
-      i += 1
-    else
-      invoice_number = invoice.format_number(i)
-    end
-  end
-
+  invoice_number = invoice.number # Store invoice number in a variable for reuse
   biller = Biller.new
   client = Client.new
   header = Header.new.format(invoice_number, invoice.date, biller.address, client.address)
@@ -112,7 +99,7 @@ if gets.chomp == "y"
 
   grid = Grid.new.format(history)
 
-  File.open("invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
+  File.open("#{FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
   puts "generated invoice#{invoice_number}.txt"
 else
   puts "quitting..."
@@ -128,10 +115,11 @@ end
 #  - Allow multiple git repos per invoice
 #  - Don't print street2 when it has nc
 #  - Provide control over which commits get added to the invoice
-#  - Invoice.generate_number
 #  - Create CLI object?
 #  - Improved CLI (move cursor left; quit button; enter commands)
 #  - Turn into rubygem
 #  - Store invoices to database?
-#  - Fix Commit.index
+#  - Fix Commit.index & LineItem.index
 #  - Write tests
+#  - Improve CLI (rather than running a file in Ruby, enter commands by typing "invoices")
+#  - Allow users to select where they want their invoices to be stored
