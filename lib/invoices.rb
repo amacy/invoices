@@ -7,8 +7,10 @@ require_relative "invoices/user_input"
 invoice = Invoice.new
 invoice.db # Find/create the db
 begin
-  invoice.create_biller_table
-  invoice.create_client_table
+  invoice.create_billers_table
+  invoice.create_clients_table
+  invoice.create_invoices_table
+  invoice.create_line_items_table
 rescue SQLite3::SQLException
 end
 FOLDER = File.expand_path('~/invoices')
@@ -118,6 +120,7 @@ end
 #  - Don't print street2 when it has nc
 #  - Allow users to select where they want their invoices to be stored
 #  - Implement MVC code organization
+#  - Require a biller & client to be added before generating an invoice
 #  - Turn into rubygem
 #  - Write tests
 #  - Write instructions
@@ -126,6 +129,8 @@ end
 #  - Allow multiple git repos per invoice
 #  - Provide control over which commits get added to the invoice
 #  - Improve CLI (rather than running a file in Ruby, enter commands by typing "invoices")
+#  - Add ability to regenerate invoices
+#  - Add ability to preview invoices @ the command line
 #
 ## BUGS
 #  - CLI not prompting for Commit.index date => msg pair

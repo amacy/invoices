@@ -2,7 +2,7 @@ class Invoice < String
   def db
     SQLite3::Database.new "test.db"
   end
-  def create_biller_table
+  def create_billers_table
     db.execute <<-SQL
       create table billers (
         name varchar(30),
@@ -15,7 +15,7 @@ class Invoice < String
       );
     SQL
   end
-  def create_client_table
+  def create_clients_table
     db.execute <<-SQL
       create table clients (
         name varchar(30),
@@ -29,30 +29,51 @@ class Invoice < String
       );
     SQL
   end
-  def add_row_to_biller_table(name, street1, street2, city, state, zip, phone)
+  def add_row_to_billers_table(name, street1, street2, city, state, zip, phone)
     db.execute("INSERT INTO billers 
                (name, street1, street2, city, state, zip, phone) 
                VALUES (?, ?, ?, ?, ?, ?, ?)", 
                [name, street1, street2, city, state, zip, phone])
   end
-  def add_row_to_client_table(name, street1, street2, city, state, zip, phone, rate)
+  def add_row_to_clients_table(name, street1, street2, city, state, zip, phone, rate)
     db.execute("INSERT INTO clients 
                (name, street1, street2, city, state, zip, phone, rate) 
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
                [name, street1, street2, city, state, zip, phone, rate])
   end
-  def create_invoice_table # not being used
+  def create_invoices_table # not being used
     db.execute <<-SQL
       create table invoices (
-        number int,
-        date varchar(10)
-        client_id int,
-        commit_date varchar(8),
-        commit_msg varchar(40),
+        invoice_number varchar(4),
+        date varchar(10),
+        biller_id int,
+        client_id int
+        );
+    SQL
+  end
+  def add_row_to_invoices_table(num, date, biller_id, client_id)
+    db.execute("INSERT INTO invoices 
+               (invoice_number, date, biller_id, client_id) 
+               VALUES (?, ?, ?, ?)", 
+               [num, date, biller_id, client_id])
+  end
+  def create_line_items_table
+    db.execute <<-SQL
+      create table line_items (
+        invoice_number varchar(4),
+        line_number int,
+        commit_date varchar(10),
+        commit_msg varchar,
         hrs int,
         rate int
-      );
+        );
     SQL
+  end
+  def add_row_to_line_items_table(invoice_num, line_num, commit_date, commit_msg, hrs, rate)
+    db.execute("INSERT INTO line_items 
+           (invoice_number, line_number, commit_date, commit_msg, hrs, rate) 
+           VALUES (?, ?, ?, ?, ?, ?)", 
+           [invoice_num, line_num, commit_date, commit_msg, hrs, rate])
   end
   def date
     time = Time.now
@@ -207,7 +228,7 @@ class Commit < LineItem
   def date(line)
     timestamp = line.split(/> /).last.slice(0, 10)
     timestamp = DateTime.strptime(timestamp, '%s')
-    timestamp = timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s.slice(0, 2)
+    timestamp = timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s.slice(3, 2)
     compare_length(timestamp, 8)
   end
   def msg(line)
