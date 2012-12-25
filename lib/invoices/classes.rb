@@ -152,7 +152,7 @@ class Grid < Invoice
     "TOTALS:                                                   +     +      +" + "\n"
   end
   def divider
-    " + "
+    " | "
   end
   def format(git_file)
     border_top + 
@@ -221,17 +221,12 @@ class Commit < LineItem
   def index(file)
     # Takes a file as an array of lines and 
     # returns a hash of date => msg pairs
-    msgs = []
-    dates = []
     commits = {}
-    i = 0
     file.each do |line|
       commit = Commit.new
       stripped_msg = commit.msg(line)
-      msgs.push(stripped_msg)
       stripped_date = commit.date(line)
-      dates.push(stripped_date)
-      commits[dates[i]] = msgs[i]
+      commits[stripped_date] = stripped_msg
     end
     commits
   end

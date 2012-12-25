@@ -73,27 +73,29 @@ if gets.chomp == "y"
   history = IO.readlines("#{root}/.git/logs/HEAD")
   history.keep_if { |line| line.include?("commit") }
 
-  puts "Would you like to enter a different rate for each commit? (y/n)"
-  rate_boolean = gets.chomp
   commits_hash = Commit.new.index(history)
-  i = 0
   commit_msgs_array = []
   rates = []
-  if rate_boolean == true
+  puts commits_hash # For testing purposes
+
+  puts "Would you like to enter a different rate for each commit? (y/n)"
+  if gets.chomp == "y"
+    i = 0
     commits_hash.each_value do |commit|
-      i += 1
-      puts "\n" + "commit #{i}: " + commit
+      puts "\n" + "commit #{i + 1}: " + commit
       puts "how long did this take?"
       commit_msgs_array[i] = gets.chomp
       puts "how much will you charge?"
       rates[i] = gets.chomp
+      i += 1
     end
   else
+    i = 0
     commits_hash.each_value do |commit|
-      i += 1
-      puts "\n" + "commit #{i}: " + commit
+      puts "\n" + "commit #{i + 1}: " + commit
       puts "how long did this take?"
       rates[i] = gets.chomp
+      i += 1
     end
   end
 
@@ -105,21 +107,26 @@ else
   puts "quitting..."
 end
 
-## TO DO LIST
+## TO DO LIST - v0.1.0
+#  - Store invoices to database
 #  - Input hours at CL
 #  - Input rate at CL
 #  - Allow commit messages to be multiple lines
 #  - Raise errors where noted (in comments)
 #  - Totals
 #  - Allow queries for multiple billers/clients
-#  - Allow multiple git repos per invoice
 #  - Don't print street2 when it has nc
-#  - Provide control over which commits get added to the invoice
-#  - Create CLI object?
-#  - Improved CLI (move cursor left; quit button; enter commands)
-#  - Turn into rubygem
-#  - Store invoices to database?
-#  - Write tests
-#  - Improve CLI (rather than running a file in Ruby, enter commands by typing "invoices")
 #  - Allow users to select where they want their invoices to be stored
 #  - Implement MVC code organization
+#  - Turn into rubygem
+#  - Write tests
+#  - Write instructions
+#
+## Version - v0.2.0
+#  - Allow multiple git repos per invoice
+#  - Provide control over which commits get added to the invoice
+#  - Improve CLI (rather than running a file in Ruby, enter commands by typing "invoices")
+#
+## BUGS
+#  - CLI not prompting for Commit.index date => msg pair
+#  - Date printing first 2 digits of year instead of last 2 digits
