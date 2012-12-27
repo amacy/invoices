@@ -72,10 +72,10 @@ if gets.chomp == "y"
   root = File.expand_path(gets.chomp) # Allow relative directories
   if root[-1] == "/" then root.slice!(0..root.length) end # Remove trailing slash
 
-  history = IO.readlines("#{root}/.git/logs/HEAD")
-  history.keep_if { |line| line.include?("commit") }
+  git_log = IO.readlines("#{root}/.git/logs/HEAD")
+  git_log.keep_if { |line| line.include?("commit") }
 
-  commits_hash = Commit.new.index(history)
+  commits_hash = Commit.new.index(git_log)
   commit_msgs_array = []
   rates = []
   puts commits_hash # For testing purposes
@@ -101,7 +101,7 @@ if gets.chomp == "y"
     end
   end
 
-  grid = Grid.new.format(history)
+  grid = Grid.new.format(git_log)
 
   File.open("#{FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
   puts "generated invoice#{invoice_number}.txt"

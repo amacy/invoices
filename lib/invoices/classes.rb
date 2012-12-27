@@ -184,7 +184,7 @@ class Grid < Invoice
     total
   end
   def total_hrs
-
+    
   end
   def total_rate
     
