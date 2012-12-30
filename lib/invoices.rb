@@ -23,10 +23,10 @@ session.generate_invoice
 
 ## TO DO LIST - v0.1.0
 #  - Improve semantic naming/organization of classes & methods
+#  - Improve instance variable usage
 #  - Allow commit messages to be multiple lines
 #  - Raise errors where noted (in comments)
 #  - Allow queries for multiple billers/clients
-#  - Don't print street2 when it has nc
 #  - Implement MVC code organization
 #  - Turn into rubygem
 #  - Write tests

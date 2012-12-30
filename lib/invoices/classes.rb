@@ -36,7 +36,12 @@ class Header < Invoice
   end                  # traditionally, the most common
   def line(left, right)
     @space = space(left.length + right.length)
-    left + @space + right + "\n"
+    @line = left + @space + right + "\n"
+    if @line.strip.empty?
+      ""
+    else
+      @line
+    end
   end
   def format(num, date, biller, client)
     line("INVOICE #" + num, date) +
@@ -60,7 +65,7 @@ class Biller < Header
     get_row[1].to_s
   end
   def street2
-    get_row[2].to_s
+    @street2 = get_row[2].to_s
   end
   def city
     get_row[3].to_s
