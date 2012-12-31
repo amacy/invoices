@@ -1,8 +1,10 @@
+#!/usr/bin/env ruby
 require 'sqlite3'
-require_relative 'invoices/classes'
-require_relative 'invoices/database'
-require_relative 'invoices/user_input'
+require_relative '../lib/invoices/classes'
+require_relative '../lib/invoices/database'
+require_relative '../lib/invoices/user_input'
 
+INVOICES_VERSION = "0.0.0"
 session = Invoice.new
 session.db # Find/create the db
 begin
@@ -17,9 +19,11 @@ unless File.directory?(FOLDER)
   Dir.mkdir(FOLDER)
 end
 # Command Line Prompts
-session.add_biller
-session.add_client
-session.generate_invoice
+session.parse_options
+session.commands
+#session.add_biller
+#session.add_client
+#session.generate_invoice
 
 ## TO DO LIST - v0.1.0
 #  - Improve semantic naming/organization of classes & methods

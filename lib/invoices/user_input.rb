@@ -1,8 +1,26 @@
+require 'optparse'
 require_relative 'classes'
 require_relative 'database'
 
 module UserInput
   include DatabaseHelpers
+  
+  def parse_options
+    OptionParser.new do |opt|
+      opt.banner = "Usage: invoices COMMAND [OPTIONS]"
+
+      opt.on("-v", "--version", "Check the version of Invoices") do
+        puts "v#{INVOICES_VERSION}"
+      end
+    end.parse!
+  end
+
+  def commands
+    case ARGV[0]
+    when "new"
+      generate_invoice
+    end
+  end
   
   def add_biller
     puts "Would you like to enter your information? (y/n)"
@@ -49,7 +67,7 @@ module UserInput
   def generate_invoice
     biller = Biller.new
     client = Client.new
-    if biller.get_row && client.get_row != nil
+    if biller.get_row != nil && client.get_row != nil
       puts "Would you like to create a new invoice? (y/n)"
       if gets.chomp == "y"
         invoice = Invoice.new
