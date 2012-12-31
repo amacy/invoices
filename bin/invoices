@@ -20,18 +20,15 @@ unless File.directory?(FOLDER)
 end
 # Command Line Prompts
 session.parse_options
-session.commands
-#session.add_biller
-#session.add_client
-#session.generate_invoice
+session.parse_commands
 
 ## TO DO LIST - v0.1.0
 #  - Improve semantic naming/organization of classes & methods
 #  - Improve instance variable usage
+#  - Implement MVC code organization
 #  - Allow commit messages to be multiple lines
 #  - Raise errors where noted (in comments)
 #  - Allow queries for multiple billers/clients
-#  - Implement MVC code organization
 #  - Turn into rubygem
 #  - Write tests
 #  - Write instructions
@@ -39,7 +36,6 @@ session.commands
 ## Version - v0.2.0
 #  - Allow multiple git repos per invoice
 #  - Provide control over which commits get added to the invoice
-#  - Improve CLI (rather than running a file in Ruby, enter commands by typing "invoices")
 #  - Add ability to regenerate invoices
 #  - Add ability to preview invoices @ the command line
 #  - Allow users to select where they want their invoices to be stored
