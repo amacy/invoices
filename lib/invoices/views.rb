@@ -1,5 +1,3 @@
-require_relative 'controllers'
-
 class Header < String
   def space(chars)
     " " * (72 - chars) # 72 chars in page width was, 
@@ -39,7 +37,9 @@ class Grid < String
     "----+----------+------------------------------------------+-----+------+" + "\n"
   end
   def total(invoice)
-    "TOTALS:                                                   + #{invoice.calc_hrs(invoice.number.to_i)} + #{invoice.calc_rate(invoice.number.to_i)} +" + "\n"
+    "TOTALS:" + (" " * 53) +
+    "#{format_hrs(invoice.calc_hrs(invoice.number.to_i))}" + divider +
+    "#{format_rate(invoice.calc_rate(invoice.number.to_i))}" + "\n"
   end
   def divider
     " | "

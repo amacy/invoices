@@ -1,15 +1,13 @@
-require_relative 'application_controller'
 require_relative 'models'
 
-class Invoice < String
-  include ApplicationController
+class Invoice
   include Models
 
   attr_reader :hours, :rate
 
   def date
     time = Time.now
-    time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
+    @date = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
   end
   def format_number(x)
     if x >=  1 && x < 10 then "000#{x}"
@@ -47,7 +45,9 @@ class Invoice < String
   end
 end
 
-class Biller < Invoice
+class Biller
+  include Models
+
   def get_row
     db.execute("select * from billers").first
   end
@@ -79,15 +79,14 @@ class Client < Biller
     db.execute("select * from clients").first
   end
   def default_rate
-    get_row[7].to_s
+    @rate = get_row[7].to_s
   end
 end
 
 class LineItemsController
-  include ApplicationController
   include Models
 
-  attr_accessor :number, :date, :msg, :hrs, :rate, :total
+  attr_accessor :number, :date, :msg, :hrs, :rate#, :total
 
   def index(invoice_number)
     items = db.execute("select * from line_items where invoice_number = #{invoice_number}")
@@ -98,14 +97,14 @@ class LineItemsController
       item.msg = line[3]
       item.hrs = line[4].to_s
       item.rate = line[5].to_s
-      item.total = line[4] * line[5]
+      #item.total = line[4] * line[5]
       item
     end
     items
   end
 end
 
-class Commit < LineItemsController
+class Commit
   def date(line)
     @timestamp = line.split(/> /).last.slice(0, 10)
     @timestamp = DateTime.strptime(@timestamp, '%s')
@@ -118,10 +117,8 @@ class Commit < LineItemsController
       @msg = line.split(/commit \(initial\):/).last.strip.slice(0, 40)
     end
   end
-  def index(file)
-    # Takes a file as an array of lines and 
-    # returns a hash of date => msg pairs
-    commits = {}
+  def index(file) # Takes a file as an array of lines and 
+    commits = {}  # returns a hash of date => msg pairs
     file.each do |line|
       commit = Commit.new
       stripped_msg = commit.msg(line)

@@ -3,7 +3,7 @@ require_relative 'controllers'
 require_relative 'models'
 require_relative 'views'
 
-module ApplicationController
+class ApplicationController
   include Models
   
   def parse_options
@@ -15,9 +15,10 @@ module ApplicationController
       opt.on("-v", "--version", "Check the version of Invoices") do
         puts "v#{INVOICES_VERSION}"
       end
+      #opts.on("-b", "--biller", "Select the biller") do
+      #end
     end.parse!
   end
-
   def parse_commands
     case ARGV[0]
     when "new"
@@ -28,7 +29,6 @@ module ApplicationController
       add_client
     end
   end
-  
   def add_biller
     puts "Would you like to enter your information? (y/n)"
     if $stdin.gets.chomp == "y"
