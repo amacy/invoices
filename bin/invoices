@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 require 'sqlite3'
-require_relative '../lib/invoices/classes'
-require_relative '../lib/invoices/database'
-require_relative '../lib/invoices/user_input'
+require_relative '../lib/invoices/controllers'
+require_relative '../lib/invoices/views'
+require_relative '../lib/invoices/models'
+require_relative '../lib/invoices/application_controller'
 
 INVOICES_VERSION = "0.0.0"
 session = Invoice.new
@@ -25,7 +26,6 @@ session.parse_commands
 ## TO DO LIST - v0.1.0
 #  - Improve semantic naming/organization of classes & methods
 #  - Improve instance variable usage
-#  - Implement MVC code organization
 #  - Allow commit messages to be multiple lines
 #  - Raise errors where noted (in comments)
 #  - Allow queries for multiple billers/clients

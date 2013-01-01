@@ -1,9 +1,10 @@
 require 'optparse'
-require_relative 'classes'
-require_relative 'database'
+require_relative 'controllers'
+require_relative 'models'
+require_relative 'views'
 
-module UserInput
-  include DatabaseHelpers
+module ApplicationController
+  include Models
   
   def parse_options
     OptionParser.new do |opt|
@@ -78,7 +79,8 @@ module UserInput
       if $stdin.gets.chomp == "y"
         invoice = Invoice.new
         invoice_number = invoice.number # Store invoice number in a variable for reuse
-        header = Header.new.format(invoice_number, invoice.date, biller.address, client.address)
+        header = Header.new
+        header = header.format(invoice_number, invoice.date, header.address(biller), header.address(client))
         
         puts "Where is the project root (the parent directory of the git repo)?"
         root = File.expand_path($stdin.gets.chomp) # Allow relative directories
@@ -113,7 +115,8 @@ module UserInput
           end
         end
 
-        grid = Grid.new.format(invoice_number)
+        items = LineItemsController.new.index(invoice_number)
+        grid = Grid.new.format_all(invoice, items)
 
         File.open("#{FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
         puts "generated invoice#{invoice_number}.txt"

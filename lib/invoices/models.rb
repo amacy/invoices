@@ -1,4 +1,4 @@
-module DatabaseHelpers
+module Models
   def db
     SQLite3::Database.new "test.db"
   end
