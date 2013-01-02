@@ -1,3 +1,4 @@
+require_relative 'application_controller'
 require_relative 'models'
 
 class Invoice
@@ -72,15 +73,32 @@ class Biller
   def phone
     @phone = get_row[6].to_s
   end
+  def find_by_name(name)
+    db.execute("select * from billers where name = '#{name}'")
+  end
 end
 
-class Client < Biller
-  def get_row
-    db.execute("select * from clients").first
+class Client #< Biller
+  include Models
+  
+  attr_accessor :name, :street1, :street2, :city, :state, :zip, :phone, :default_rate
+
+  def initialize(array)
+    @name = array[0].to_s
+    @street1 = array[1].to_s
+    @street2 = array[2].to_s
+    @city = array[3].to_s
+    @state = array[4].to_s
+    @zip = array[5].to_s
+    @phone = array[6].to_s
+    @default_rate = array[7].to_s
   end
-  def default_rate
-    @rate = get_row[7].to_s
+=begin # Currently lives in ApplicationController
+  def find_by_name(string)
+    client = db.execute("select * from clients where name = '#{string}'").first
+    initialize(client)
   end
+=end
 end
 
 class LineItemsController

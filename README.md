@@ -6,10 +6,11 @@ My first gem. Also my first offline foray into OOB.
 
 # TO DO LIST
 ## v0.1.0
+- Store Invoices to database (not just Line Items)
 - Improve controller/model separation
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
-- Allow queries for multiple billers/clients
+- Add email field to billers & clients
 - Write tests
 - Turn into rubygem
 - Write instructions

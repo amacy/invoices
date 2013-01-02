@@ -7,7 +7,7 @@ class ApplicationController
   include Models
   
   def parse_options
-    OptionParser.new do |opt|
+    global = OptionParser.new do |opt|
       opt.banner = "Usage: invoices COMMAND [OPTIONS]"
       # --new
       # --list
@@ -17,12 +17,27 @@ class ApplicationController
       end
       #opts.on("-b", "--biller", "Select the biller") do
       #end
-    end.parse!
+    end
+    subcommands = {
+      'invoice' => OptionParser.new do |opt|
+        opt.on("-n", "--new", "Generate a new Invoice") do
+          generate_invoice
+        end
+        opt.on("-c", "--client CLIENT", "Select the client for this invoice") do |c|
+          query = db.execute("select * from clients where name = '#{c}'").first # Shouldn't be here
+          client = Client.new(query)
+          generate_invoice(client)
+        end
+      end
+    }
+    
+    global.order!
+    subcommands[ARGV.shift].order!
   end
   def parse_commands
     case ARGV[0]
-    when "new"
-      generate_invoice
+    when "invoice"
+      #generate_invoice
     when "biller"
       add_biller
     when "client"
@@ -71,10 +86,9 @@ class ApplicationController
       add_row_to_clients_table(client_name, client_street1, client_street2, client_city, client_state, client_zip, client_phone, client_rate)
     end
   end
-  def generate_invoice
+  def generate_invoice(client)
     biller = Biller.new
-    client = Client.new
-    if biller.get_row != nil && client.get_row != nil
+    if biller.get_row != nil && client.name!= nil # Should check upon initializing app
       puts "Would you like to create a new invoice? (y/n)"
       if $stdin.gets.chomp == "y"
         invoice = Invoice.new
@@ -118,7 +132,7 @@ class ApplicationController
         items = LineItemsController.new.index(invoice_number)
         grid = Grid.new.format_all(invoice, items)
 
-        File.open("#{FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
+        File.open("#{INVOICES_FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
         puts "generated invoice#{invoice_number}.txt"
       else
         puts "quitting..."
