@@ -6,7 +6,7 @@ My first gem. Also my first offline foray into OOB.
 
 # TO DO LIST
 ## v0.1.0
-- Store Invoices to database (not just Line Items)
+- All Models should receive objects (like the Client Model does)
 - Improve controller/model separation
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
