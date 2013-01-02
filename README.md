@@ -12,6 +12,7 @@ My first gem. Also my first offline foray into OOB.
 - Raise errors where noted (in comments)
 - Add email field to billers & clients
 - Write tests
+- Add custom error messages throughout
 - Turn into rubygem
 - Write instructions
 

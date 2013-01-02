@@ -1,6 +1,6 @@
 module Models
   def db
-    SQLite3::Database.new "test.db"
+    INVOICES_DB
   end
   def create_billers_table
     db.execute <<-SQL
@@ -35,13 +35,13 @@ module Models
       );
     SQL
   end
-  def add_row_to_clients_table(name, street1, street2, city, state, zip, phone, rate)
+  def add_row_to_clients_table(client)
     db.execute("INSERT INTO clients 
                (name, street1, street2, city, state, zip, phone, rate) 
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-               [name, street1, street2, city, state, zip, phone, rate])
+               [client.name, client.street1, client.street2, client.city, client.state, client.zip, client.phone, client.rate])
   end
-  def create_invoices_table # not being used
+  def create_invoices_table
     db.execute <<-SQL
       create table invoices (
         invoice_number int,
@@ -51,11 +51,11 @@ module Models
         );
     SQL
   end
-  def add_row_to_invoices_table(num, date, biller_id, client_id)
+  def add_row_to_invoices_table(num, date, client_id)
     db.execute("INSERT INTO invoices 
-               (invoice_number, date, biller_id, client_id) 
-               VALUES (?, ?, ?, ?)", 
-               [num, date, biller_id, client_id])
+               (invoice_number, date, client_id) 
+               VALUES (?, ?, ?)", 
+               [num, date, client_id])
   end
   def create_line_items_table
     db.execute <<-SQL

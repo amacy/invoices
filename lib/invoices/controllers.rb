@@ -3,9 +3,7 @@ require_relative 'models'
 
 class Invoice
   include Models
-
   attr_reader :hours, :rate
-
   def date
     time = Time.now
     @date = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
@@ -29,6 +27,19 @@ class Invoice
     end
     format_number(i)
   end
+  def project_root(file)
+    # Allow relative directories
+    @root = File.expand_path(file)
+    # Remove trailing slash
+    if @root[-1] == "/" then @root.slice!(0..root.length) end 
+    @root
+  end
+  def git_root
+    git_log = IO.readlines("#{@root}/.git/logs/HEAD")
+    f = File.new("#{@root}/.git/logs/HEAD")
+    f.close unless f.closed?
+    git_log.keep_if { |line| line.include?("commit") }
+  end
   def calc_hrs(invoice_number)
     hrs_array = db.execute("select hrs from line_items where invoice_number = #{invoice_number}")
     @hours = hrs_array.inject(:+).inject(:+).to_s
@@ -48,64 +59,42 @@ end
 
 class Biller
   include Models
-
-  def get_row
-    db.execute("select * from billers").first
-  end
-  def name
-    @name = get_row[0].to_s
-  end
-  def street1
-    @street1 = get_row[1].to_s
-  end
-  def street2
-    @street2 = get_row[2].to_s
-  end
-  def city
-    @city = get_row[3].to_s
-  end
-  def state
-    @state = get_row[4].to_s
-  end
-  def zip
-    @zip = get_row[5].to_s
-  end
-  def phone
-    @phone = get_row[6].to_s
-  end
-  def find_by_name(name)
-    db.execute("select * from billers where name = '#{name}'")
+  attr_accessor :name, :street1, :street2, :city, :state, :zip, :phone
+  def initialize
+    biller = db.execute("select * from billers").first
+    @name = biller[0].to_s
+    @street1 = biller[1].to_s
+    @street2 = biller[2].to_s
+    @city = biller[3].to_s
+    @state = biller[4].to_s
+    @zip = biller[5].to_s
+    @phone = biller[6].to_s
   end
 end
 
-class Client #< Biller
+class Client
   include Models
-  
-  attr_accessor :name, :street1, :street2, :city, :state, :zip, :phone, :default_rate
-
-  def initialize(array)
-    @name = array[0].to_s
-    @street1 = array[1].to_s
-    @street2 = array[2].to_s
-    @city = array[3].to_s
-    @state = array[4].to_s
-    @zip = array[5].to_s
-    @phone = array[6].to_s
-    @default_rate = array[7].to_s
+  attr_accessor :id, :name, :street1, :street2, :city, :state, :zip, :phone, :rate
+  def initialize(name)
+    if name.empty?
+    else
+      client = db.execute("select * from clients where name = '#{name}'").first
+      @id = db.execute("select rowid from clients where name = '#{name}'").first
+      @name = client[0].to_s
+      @street1 = client[1].to_s
+      @street2 = client[2].to_s
+      @city = client[3].to_s
+      @state = client[4].to_s
+      @zip = client[5].to_s
+      @phone = client[6].to_s
+      @rate = client[7].to_s
+    end
   end
-=begin # Currently lives in ApplicationController
-  def find_by_name(string)
-    client = db.execute("select * from clients where name = '#{string}'").first
-    initialize(client)
-  end
-=end
 end
 
 class LineItemsController
   include Models
-
   attr_accessor :number, :date, :msg, :hrs, :rate#, :total
-
   def index(invoice_number)
     items = db.execute("select * from line_items where invoice_number = #{invoice_number}")
     items.map! do |line|

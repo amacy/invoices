@@ -5,8 +5,9 @@ require_relative '../lib/invoices/views'
 require_relative '../lib/invoices/models'
 require_relative '../lib/invoices/application_controller'
 
-INVOICES_VERSION = "0.0.0"
+INVOICES_VERSION = '0.0.0'
 INVOICES_FOLDER = File.expand_path('~/Invoices')
+INVOICES_DB = SQLite3::Database.new('test.db')
 
 app = ApplicationController.new
 app.db # Find/create the db
@@ -17,9 +18,8 @@ begin
   app.create_line_items_table
 rescue SQLite3::SQLException
 end
-unless File.directory?(INVOICES_FOLDER)
-  Dir.mkdir(INVOICES_FOLDER)
-end
+Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
+
 # Command Line Prompts
 app.parse_options
 app.parse_commands
