@@ -3,5 +3,5 @@
 *.swo
 *.DS_Store
 
-# Invoices
-*.txt
+# Database
+*.db

@@ -38,14 +38,17 @@ class Grid < String
   end
   def total(invoice)
     "TOTALS:" + (" " * 53) +
-    "#{format_hrs(invoice.calc_hrs(invoice.number.to_i))}" + divider +
-    "#{format_rate(invoice.calc_rate(invoice.number.to_i))}" + "\n"
+    "#{format_hrs(invoice.total_hrs)}" + 
+    divider +
+    "#{format_rate(invoice.total_cost)}" + 
+    "\n"
   end
   def divider
     " | "
   end
   def compare_length(string, max_length)
     # raise error if string.length < 0 || string.length > max_length
+    string = string.to_s unless string.instance_of?(String) 
     if string.length < max_length
       difference = 0
       difference = max_length - string.length
@@ -58,7 +61,7 @@ class Grid < String
     compare_length(h, 3)
   end
   def format_rate(amt)
-    compare_length("$" + amt, 4)
+    compare_length("$" + amt.to_s, 4)
   end
   def format_all(invoice, line_items)
     border_top + 
@@ -82,7 +85,7 @@ class LineItemsView < Grid
   end
   def prepare(line_items) # Receives an array from LineItemsController
     line_items.map do |item|
-      format_number(item.number) + divider +
+      format_number(item.line_number) + divider +
       format_date(item.date) + divider +
       format_msg(item.msg) + divider +
       format_hrs(item.hrs) + divider +

@@ -3,7 +3,8 @@ require_relative 'models'
 
 class Invoice
   include Models
-  attr_reader :hours, :rate
+  attr_reader :hours, :rate, :line_items_array
+  attr_accessor :client_id, :total_hrs, :total_cost
   def date
     time = Time.now
     @date = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
@@ -16,7 +17,7 @@ class Invoice
     # raise an exception for x >= 10000
     end
   end
-  def number
+  def calculate_number
     i = 1
     Dir.foreach(File.expand_path('~/invoices')) do |filename|
       if filename.include?("invoice#{format_number(i)}.txt")
@@ -31,7 +32,8 @@ class Invoice
     # Allow relative directories
     @root = File.expand_path(file)
     # Remove trailing slash
-    if @root[-1] == "/" then @root.slice!(0..root.length) end 
+    length = @root.length
+    @root.slice!((length - 1)..length) if @root[-1] == "/" 
     @root
   end
   def git_root
@@ -40,35 +42,28 @@ class Invoice
     f.close unless f.closed?
     git_log.keep_if { |line| line.include?("commit") }
   end
-  def calc_hrs(invoice_number)
-    hrs_array = db.execute("select hrs from line_items where invoice_number = #{invoice_number}")
-    @hours = hrs_array.inject(:+).inject(:+).to_s
-  end
-  def calc_rate(invoice_number)
-    rate_array = db.execute("select rate from line_items where invoice_number = #{invoice_number}").inject(:+)
-    hrs_array = db.execute("select hrs from line_items where invoice_number = #{invoice_number}").inject(:+)
-    i = 0
-    line_total = 0
-    rate_array.each do |rate|
-      line_total += (rate * hrs_array[i])
-      i += 1
-    end
-    @rate = line_total.to_s
+  def add_line_items(line_item)
+    @line_items_array = []
+    i = @line_items_array.length
+    @line_items_array[i] = line_item
   end
 end
 
 class Biller
   include Models
   attr_accessor :name, :street1, :street2, :city, :state, :zip, :phone
-  def initialize
-    biller = db.execute("select * from billers").first
-    @name = biller[0].to_s
-    @street1 = biller[1].to_s
-    @street2 = biller[2].to_s
-    @city = biller[3].to_s
-    @state = biller[4].to_s
-    @zip = biller[5].to_s
-    @phone = biller[6].to_s
+  def initialize(param)
+    if param.empty?
+    else
+      biller = db.execute("select * from billers").first
+      @name = biller[0].to_s
+      @street1 = biller[1].to_s
+      @street2 = biller[2].to_s
+      @city = biller[3].to_s
+      @state = biller[4].to_s
+      @zip = biller[5].to_s
+      @phone = biller[6].to_s
+    end
   end
 end
 
@@ -78,8 +73,10 @@ class Client
   def initialize(name)
     if name.empty?
     else
-      client = db.execute("select * from clients where name = '#{name}'").first
-      @id = db.execute("select rowid from clients where name = '#{name}'").first
+      client = db.execute("select * from clients 
+                          where name = '#{name}'").first
+      @id = db.execute("select rowid from clients 
+                       where name = '#{name}'").first
       @name = client[0].to_s
       @street1 = client[1].to_s
       @street2 = client[2].to_s
@@ -94,18 +91,16 @@ end
 
 class LineItemsController
   include Models
-  attr_accessor :number, :date, :msg, :hrs, :rate#, :total
-  def index(invoice_number)
-    items = db.execute("select * from line_items where invoice_number = #{invoice_number}")
+  attr_accessor :invoice_number, :line_number, :date, :msg, :hrs, :rate, :cost
+  def initialize(invoice_number, line_number, date, msg, hrs, rate)
+    @invoice_number, @line_number, @date, @msg, @hrs, @rate = invoice_number, line_number, date, msg, hrs.to_i, rate.to_i
+    @cost = @hrs * @rate
+  end
+  def find_by_invoice_number(invoice_number)
+    items = db.execute("select * from line_items where 
+                       invoice_number = #{invoice_number}")
     items.map! do |line|
-      item = LineItemsController.new
-      item.number = line[1].to_s
-      item.date = line[2]
-      item.msg = line[3]
-      item.hrs = line[4].to_s
-      item.rate = line[5].to_s
-      #item.total = line[4] * line[5]
-      item
+      LineItemsController.new(line[0].to_s, line[1].to_s, line[2], line[3], line[4].to_s, line[5].to_s)
     end
     items
   end
@@ -113,9 +108,9 @@ end
 
 class Commit
   def date(line)
-    @timestamp = line.split(/> /).last.slice(0, 10)
-    @timestamp = DateTime.strptime(@timestamp, '%s')
-    @timestamp = @timestamp.month.to_s + "/" + @timestamp.day.to_s + "/" + @timestamp.year.to_s.slice(2, 2)
+    timestamp = line.split(/> /).last.slice(0, 10)
+    timestamp = DateTime.strptime(timestamp, '%s')
+    @date = timestamp.month.to_s + "/" + timestamp.day.to_s + "/" + timestamp.year.to_s.slice(2, 2)
   end
   def msg(line)
     if line.include?("commit:")

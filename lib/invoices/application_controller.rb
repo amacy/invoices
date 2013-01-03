@@ -5,13 +5,25 @@ require_relative 'views'
 
 class ApplicationController
   include Models
+  def initialize
+    db # Find/create the db
+    begin
+      create_billers_table
+      create_clients_table
+      create_invoices_table
+      create_line_items_table
+    rescue SQLite3::SQLException
+    end
+    Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
+  end 
   def parse_options
     global = OptionParser.new do |opt|
       opt.banner = "Usage: invoices COMMAND [OPTIONS]"
       # --new
       # --list
       # --reprint
-      opt.on("-v", "--version", "Check the version of Invoices") do
+      opt.on("-v", "--version", "Check the version of 
+             Invoices") do
         puts "v#{INVOICES_VERSION}"
       end
       #opts.on("-b", "--biller", "Select the biller") do
@@ -24,7 +36,12 @@ class ApplicationController
           generate_invoice(client)
         end
       end,
-     'client' => OptionParser.new do |opt|
+      'biller' => OptionParser.new do |opt|
+        opt.on("-n", "--new", "Add a new biller to the database") do
+          add_biller
+        end
+      end,
+      'client' => OptionParser.new do |opt|
         opt.on("-n", "--new", "Add a new client to the database") do
           add_client
         end
@@ -37,26 +54,26 @@ class ApplicationController
     case ARGV[0]
     when "invoice"
     when "biller"
-      add_biller
     when "client"
     end
   end
   def add_biller
+    biller = Biller.new("")
     puts "your name >"
-    user_name = $stdin.gets.chomp
+    biller.name = $stdin.gets.chomp
     puts "street1 >"
-    user_street1 = $stdin.gets.chomp
+    biller.street1 = $stdin.gets.chomp
     puts "street2 >"
-    user_street2 = $stdin.gets.chomp
+    biller.street2 = $stdin.gets.chomp
     puts "city >"
-    user_city = $stdin.gets.chomp
+    biller.city = $stdin.gets.chomp
     puts "state (2 letters) >"
-    user_state = $stdin.gets.chomp
+    biller.state = $stdin.gets.chomp
     puts "zip (5 digits) >"
-    user_zip = $stdin.gets.chomp
+    biller.zip = $stdin.gets.chomp
     puts "phone >"
-    user_phone = $stdin.gets.chomp
-    add_row_to_billers_table(user_name, user_street1, user_street2, user_city, user_state, user_zip, user_phone)
+    biller.phone = $stdin.gets.chomp
+    add_row_to_billers_table(biller)
   end
   def add_client
     client = Client.new("")
@@ -79,10 +96,11 @@ class ApplicationController
     add_row_to_clients_table(client)
   end
   def generate_invoice(client)
-    biller = Biller.new
+    biller = Biller.new("real deal") # Fix this
     invoice = Invoice.new
-    invoice_number = invoice.number # Fix this
-    header = Header.new
+    invoice_number = invoice.calculate_number # Fix this
+    invoice.client_id = client.id
+    header = Header.new # Fix this
     header = header.format(invoice_number, invoice.date, header.address(biller), header.address(client))
     
     puts "Where is the project root (the parent directory of the git repo)?"
@@ -93,6 +111,7 @@ class ApplicationController
     puts "Would you like to enter a different rate for each commit? (y/n)"
     custom_rate = true if $stdin.gets.chomp == "y"
     i = 0
+    line_item = nil
     commits_hash.each do |date, commit|
       puts "\n" + "commit #{i + 1}: " + commit
       puts "how long did this take?"
@@ -100,17 +119,18 @@ class ApplicationController
       if custom_rate
         puts "how much will you charge?"
         commit_rate = $stdin.gets.chomp
-        invoice.add_row_to_line_items_table(invoice_number.to_i, i + 1, date, commit, commit_hrs, commit_rate)
+        line_item = LineItemsController.new(invoice_number.to_i, i + 1, date, commit, commit_hrs, commit_rate)
       else
-        invoice.add_row_to_line_items_table(invoice_number.to_i, i + 1, date, commit, commit_hrs, client.default_rate)
+        line_item = LineItemsController.new(invoice_number.to_i, i + 1, date, commit, commit_hrs, client.rate)
       end
+      add_row_to_line_items_table(line_item)
+      invoice.add_line_items(line_item)
       i += 1
     end
-
-    items = LineItemsController.new.index(invoice_number)
+    add_row_to_invoices_table(invoice)
+    items = line_item.find_by_invoice_number(invoice_number)
     grid = Grid.new.format_all(invoice, items)
 
-    add_row_to_invoices_table(invoice_number, invoice.date, client.id) 
     File.open("#{INVOICES_FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
     puts "generated invoice#{invoice_number}.txt"
   end
