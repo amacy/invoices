@@ -1,7 +1,4 @@
-module Models
-  def db
-    INVOICES_DB
-  end
+class BillerModel
   def create_billers_table
     db.execute <<-SQL
       create table billers (
@@ -21,6 +18,9 @@ module Models
                VALUES (?, ?, ?, ?, ?, ?, ?)", 
                [biller.name, biller.street1, biller.street2, biller.city, biller.state, biller.zip, biller.phone])
   end
+end
+
+class ClientModel
   def create_clients_table
     db.execute <<-SQL
       create table clients (
@@ -42,6 +42,9 @@ module Models
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
                [client.name, client.street1, client.street2, client.city, client.state, client.zip, client.phone, client.rate])
   end
+end
+
+class InvoiceModel
   def create_invoices_table
     db.execute <<-SQL
       create table invoices (
@@ -73,6 +76,9 @@ module Models
                VALUES (?, ?, ?, ?, ?)", 
                [invoice.calculate_number, invoice.date, invoice.client_id, calculate_total_hrs(invoice), calculate_total_cost(invoice)])
   end
+end
+
+class LineItemModel
   def create_line_items_table
     db.execute <<-SQL
       create table line_items (

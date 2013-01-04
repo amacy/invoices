@@ -6,12 +6,8 @@ My first gem. Also my first offline foray into OOB.
 
 # TO DO LIST
 ## v0.1.0
-- make the db method global & turn Models into a class
 - Fix invoice.calculate_number / invoice.number / invoice_number
-- Fix names of controllers
-- Add initialize method to Header & simplify call in generate_invoice
-- All Models should receive objects (like the Client Model does)
-- Improve controller/model separation
+- Create InvoicesView; add initialize method & simplify call in generate_invoice
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
 - Add email field to billers & clients
@@ -29,4 +25,5 @@ My first gem. Also my first offline foray into OOB.
 
 ## Bugs
 - CLI not prompting for first Commit.index date => msg pair in ~
-- calculate_total_hrs not working
+- calculate_total_hrs/rate not working
+- Client names need to be in quotes

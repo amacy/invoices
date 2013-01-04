@@ -1,8 +1,6 @@
 require_relative 'application_controller'
-require_relative 'models'
 
-class Invoice
-  include Models
+class InvoicesController
   attr_reader :hours, :rate, :line_items_array
   attr_accessor :client_id, :total_hrs, :total_cost
   def date
@@ -49,8 +47,7 @@ class Invoice
   end
 end
 
-class Biller
-  include Models
+class BillersController
   attr_accessor :name, :street1, :street2, :city, :state, :zip, :phone
   def initialize(param)
     if param.empty?
@@ -67,8 +64,7 @@ class Biller
   end
 end
 
-class Client
-  include Models
+class ClientsController
   attr_accessor :id, :name, :street1, :street2, :city, :state, :zip, :phone, :rate
   def initialize(name)
     if name.empty?
@@ -90,7 +86,6 @@ class Client
 end
 
 class LineItemsController
-  include Models
   attr_accessor :invoice_number, :line_number, :date, :msg, :hrs, :rate, :cost
   def initialize(invoice_number, line_number, date, msg, hrs, rate)
     @invoice_number, @line_number, @date, @msg, @hrs, @rate = invoice_number, line_number, date, msg, hrs.to_i, rate.to_i
@@ -106,7 +101,7 @@ class LineItemsController
   end
 end
 
-class Commit
+class CommitsController
   def date(line)
     timestamp = line.split(/> /).last.slice(0, 10)
     timestamp = DateTime.strptime(timestamp, '%s')
@@ -122,7 +117,7 @@ class Commit
   def index(file) # Takes a file as an array of lines and 
     commits = {}  # returns a hash of date => msg pairs
     file.each do |line|
-      commit = Commit.new
+      commit = CommitsController.new
       stripped_msg = commit.msg(line)
       stripped_date = commit.date(line)
       commits[stripped_date] = stripped_msg

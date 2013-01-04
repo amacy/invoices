@@ -4,14 +4,13 @@ require_relative 'models'
 require_relative 'views'
 
 class ApplicationController
-  include Models
   def initialize
     db # Find/create the db
     begin
-      create_billers_table
-      create_clients_table
-      create_invoices_table
-      create_line_items_table
+      BillerModel.new.create_billers_table
+      ClientModel.new.create_clients_table
+      InvoiceModel.new.create_invoices_table
+      LineItemModel.new.create_line_items_table
     rescue SQLite3::SQLException
     end
     Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
@@ -32,7 +31,7 @@ class ApplicationController
     subcommands = {
       'invoice' => OptionParser.new do |opt|
         opt.on("-c", "--client CLIENT", "Select the client for this invoice") do |c|
-          client = Client.new(c)
+          client = ClientsController.new(c)
           generate_invoice(client)
         end
       end,
@@ -58,7 +57,8 @@ class ApplicationController
     end
   end
   def add_biller
-    biller = Biller.new("")
+    biller = BillerController.new("")
+    model = BillerModel.new
     puts "your name >"
     biller.name = $stdin.gets.chomp
     puts "street1 >"
@@ -73,10 +73,11 @@ class ApplicationController
     biller.zip = $stdin.gets.chomp
     puts "phone >"
     biller.phone = $stdin.gets.chomp
-    add_row_to_billers_table(biller)
+    model.add_row_to_billers_table(biller)
   end
   def add_client
-    client = Client.new("")
+    client = ClientsController.new("")
+    model = ClientModel.new
     puts "client name >"
     client.name = $stdin.gets.chomp
     puts "street1 >"
@@ -93,11 +94,12 @@ class ApplicationController
     client.phone = $stdin.gets.chomp
     puts "hourly rate you'll charge this client >"
     client.rate = $stdin.gets.chomp
-    add_row_to_clients_table(client)
+    model.add_row_to_clients_table(client)
   end
   def generate_invoice(client)
-    biller = Biller.new("real deal") # Fix this
-    invoice = Invoice.new
+    biller = BillersController.new("real deal") # Fix this
+    invoice = InvoicesController.new
+    invoice_model = InvoiceModel.new
     invoice_number = invoice.calculate_number # Fix this
     invoice.client_id = client.id
     header = Header.new # Fix this
@@ -107,7 +109,7 @@ class ApplicationController
     invoice.project_root($stdin.gets.chomp)
     invoice.git_root
     
-    commits_hash = Commit.new.index(invoice.git_root)
+    commits_hash = CommitsController.new.index(invoice.git_root)
     puts "Would you like to enter a different rate for each commit? (y/n)"
     custom_rate = true if $stdin.gets.chomp == "y"
     i = 0
@@ -123,11 +125,12 @@ class ApplicationController
       else
         line_item = LineItemsController.new(invoice_number.to_i, i + 1, date, commit, commit_hrs, client.rate)
       end
-      add_row_to_line_items_table(line_item)
+      line_items_model = LineItemModel.new
+      line_items_model.add_row_to_line_items_table(line_item)
       invoice.add_line_items(line_item)
       i += 1
     end
-    add_row_to_invoices_table(invoice)
+    invoice_model.add_row_to_invoices_table(invoice)
     items = line_item.find_by_invoice_number(invoice_number)
     grid = Grid.new.format_all(invoice, items)
 
