@@ -6,14 +6,13 @@ My first gem. Also my first offline foray into OOB.
 
 # TO DO LIST
 ## v0.1.0
-- Fix invoice.calculate_number / invoice.number / invoice_number
+- Better separation of controllers & model
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
 - Add email field to billers & clients
 - Write tests
 - Add custom error messages throughout
-- Turn into rubygem
-- Write instructions
+- Write instructions (rdoc)
 
 ## v0.2.0
 - Allow multiple git repos per invoice
