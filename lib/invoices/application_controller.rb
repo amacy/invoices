@@ -100,7 +100,6 @@ class ApplicationController
     biller = BillersController.new("real deal") # Fix this
     invoice = InvoicesController.new
     invoice_model = InvoiceModel.new
-    invoice_number = invoice.calculate_number # Fix this
     invoice.client_id = client.id
     
     puts "Where is the project root (the parent directory of the git repo)?"
@@ -119,9 +118,9 @@ class ApplicationController
       if custom_rate
         puts "how much will you charge?"
         commit_rate = $stdin.gets.chomp
-        line_item = LineItemsController.new(invoice_number.to_i, i + 1, date, commit, commit_hrs, commit_rate)
+        line_item = LineItemsController.new(invoice.number, i + 1, date, commit, commit_hrs, commit_rate)
       else
-        line_item = LineItemsController.new(invoice_number.to_i, i + 1, date, commit, commit_hrs, client.rate)
+        line_item = LineItemsController.new(invoice.number, i + 1, date, commit, commit_hrs, client.rate)
       end
       line_items_model = LineItemModel.new
       line_items_model.add_row_to_line_items_table(line_item)
@@ -129,10 +128,10 @@ class ApplicationController
       i += 1
     end
     invoice_model.add_row_to_invoices_table(invoice)
-    items = line_item.find_by_invoice_number(invoice_number)
+    items = line_item.find_by_invoice_number(invoice.number)
     invoice_view = InvoicesView.new(invoice, items, biller, client)
 
-    File.open("#{INVOICES_FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(invoice_view.render) }
-    puts "generated invoice#{invoice_number}.txt"
+    File.open("#{INVOICES_FOLDER}/invoice#{invoice.format_number}.txt", 'w') { |f| f.write(invoice_view.render) }
+    puts "generated invoice#{invoice.format_number}.txt"
   end
 end

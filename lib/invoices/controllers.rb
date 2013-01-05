@@ -1,30 +1,34 @@
 require_relative 'application_controller'
 
 class InvoicesController
-  attr_reader :hours, :rate, :line_items_array, :number, :date
+  attr_reader :hours, :rate, :line_items_array, :number, :date, :format_number
   attr_accessor :client_id, :total_hrs, :total_cost
+  def initialize
+    calculate_number
+  end
   def date
     time = Time.now
     @date = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
   end
-  def format_number(x)
-    if x >=  1 && x < 10 then "000#{x}"
-    elsif x >= 10 && x < 100 then "00#{x}"
-    elsif x >= 100 && x < 1000 then "0#{x}"
-    elsif x >= 100 && x < 10000 then "#{x}"
-    # raise an exception for x >= 10000
-    end
-  end
   def calculate_number
-    i = 1
-    Dir.foreach(File.expand_path('~/invoices')) do |filename|
-      if filename.include?("invoice#{format_number(i)}.txt")
-        i += 1
-      else
-        format_number(i)
+    def format(x)
+      if x >=  1 && x < 10 then "000#{x}"
+      elsif x >= 10 && x < 100 then "00#{x}"
+      elsif x >= 100 && x < 1000 then "0#{x}"
+      elsif x >= 100 && x < 10000 then "#{x}"
+      # raise an exception for x >= 10000
       end
     end
-    @number = format_number(i)
+    i = 1
+    Dir.foreach(File.expand_path('~/invoices')) do |filename|
+      if filename.include?("invoice#{format(i)}.txt")
+        i += 1
+      else
+        format(i)
+      end
+    end
+    @number = i
+    @format_number = format(i)
   end
   def project_root(file)
     # Allow relative directories

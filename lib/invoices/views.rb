@@ -25,34 +25,25 @@ class InvoicesView < String
       line(person.city + ", " + person.state + " " + person.zip, " ") + 
       line(person.phone, " ") 
     end
-    line("INVOICE #" + @invoice.number, @invoice.date) +
-    "\n" +
-    address(@biller) +
-    "\n" * 2 +
-    line("BILL TO:", "") +
-    address(@client) +
-    "\n" * 2
+    line("INVOICE #" + @invoice.format_number, @invoice.date) + "\n" +
+    address(@biller) + "\n" * 2 + 
+    line("BILL TO:", "") + address(@client) + "\n" * 2
   end
   def grid
     def border_top
-      "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + "\n"
+      "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + 
+      ("\n" * 2)
     end
     def border_bottom
+      ("\n" * 2) + 
       "----+----------+------------------------------------------+-----+------+" + "\n"
     end
     def total
-      "TOTALS:" + (" " * 53) +
-      "#{format_hrs(@invoice.total_hrs)}" + 
-      divider +
-      "#{format_rate(@invoice.total_cost)}" + 
-      "\n"
+      "TOTALS:" + (" " * 53) + "#{format_hrs(@invoice.total_hrs)}" + 
+      divider + "#{format_rate(@invoice.total_cost)}" + "\n"
     end
-    border_top + 
-    "\n" +
-    LineItemsView.new.prepare(@line_items).join("\n") +
-    "\n" * 2 +
-    border_bottom + 
-    total
+    border_top + LineItemsView.new.prepare(@line_items).join("\n") +
+    border_bottom + total
   end
   def render
     header + grid
