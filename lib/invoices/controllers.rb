@@ -1,7 +1,7 @@
 require_relative 'application_controller'
 
 class InvoicesController
-  attr_reader :hours, :rate, :line_items_array
+  attr_reader :hours, :rate, :line_items_array, :number, :date
   attr_accessor :client_id, :total_hrs, :total_cost
   def date
     time = Time.now
@@ -24,7 +24,7 @@ class InvoicesController
         format_number(i)
       end
     end
-    format_number(i)
+    @number = format_number(i)
   end
   def project_root(file)
     # Allow relative directories

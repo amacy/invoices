@@ -7,7 +7,6 @@ My first gem. Also my first offline foray into OOB.
 # TO DO LIST
 ## v0.1.0
 - Fix invoice.calculate_number / invoice.number / invoice_number
-- Create InvoicesView; add initialize method & simplify call in generate_invoice
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
 - Add email field to billers & clients

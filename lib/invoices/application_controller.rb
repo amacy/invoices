@@ -102,8 +102,6 @@ class ApplicationController
     invoice_model = InvoiceModel.new
     invoice_number = invoice.calculate_number # Fix this
     invoice.client_id = client.id
-    header = Header.new # Fix this
-    header = header.format(invoice_number, invoice.date, header.address(biller), header.address(client))
     
     puts "Where is the project root (the parent directory of the git repo)?"
     invoice.project_root($stdin.gets.chomp)
@@ -132,9 +130,9 @@ class ApplicationController
     end
     invoice_model.add_row_to_invoices_table(invoice)
     items = line_item.find_by_invoice_number(invoice_number)
-    grid = Grid.new.format_all(invoice, items)
+    invoice_view = InvoicesView.new(invoice, items, biller, client)
 
-    File.open("#{INVOICES_FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(header + grid) }
+    File.open("#{INVOICES_FOLDER}/invoice#{invoice_number}.txt", 'w') { |f| f.write(invoice_view.render) }
     puts "generated invoice#{invoice_number}.txt"
   end
 end

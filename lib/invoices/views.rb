@@ -1,79 +1,66 @@
-class Header < String
-  def space(chars)
-    " " * (72 - chars) # 72 chars in page width was, 
-  end                  # traditionally, the most common
-  def line(left, right)
-    s = space(left.length + right.length)
-    l = left + s + right + "\n"
-    if l.strip.empty?
-      ""
-    else
-      l
+require_relative 'helpers/views_helpers'
+
+class InvoicesView < String
+  include ViewsHelpers
+  def initialize(invoice, line_items, biller, client)
+    @invoice, @line_items, @biller, @client = invoice, line_items, biller, client
+  end
+  def header
+    def space(chars)
+      " " * (72 - chars) # 72 chars in page width was, 
+    end                  # traditionally, the most common
+    def line(left, right)
+      s = space(left.length + right.length)
+      l = left + s + right + "\n"
+      if l.strip.empty?
+        ""
+      else
+        l
+      end
     end
-  end
-  def address(person)
-    line(person.name, " ") +
-    line(person.street1, " ") + 
-    line(person.street2, " ") +  
-    line(person.city + ", " + person.state + " " + person.zip, " ") + 
-    line(person.phone, " ") 
-  end
-  def format(num, date, biller, client)
-    line("INVOICE #" + num, date) +
+    def address(person)
+      line(person.name, " ") +
+      line(person.street1, " ") + 
+      line(person.street2, " ") +  
+      line(person.city + ", " + person.state + " " + person.zip, " ") + 
+      line(person.phone, " ") 
+    end
+    line("INVOICE #" + @invoice.number, @invoice.date) +
     "\n" +
-    biller +
+    address(@biller) +
     "\n" * 2 +
     line("BILL TO:", "") +
-    client +
+    address(@client) +
     "\n" * 2
   end
-end
-
-class Grid < String
-  def border_top
-    "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + "\n"
-  end
-  def border_bottom
-    "----+----------+------------------------------------------+-----+------+" + "\n"
-  end
-  def total(invoice)
-    "TOTALS:" + (" " * 53) +
-    "#{format_hrs(invoice.total_hrs)}" + 
-    divider +
-    "#{format_rate(invoice.total_cost)}" + 
-    "\n"
-  end
-  def divider
-    " | "
-  end
-  def compare_length(string, max_length)
-    # raise error if string.length < 0 || string.length > max_length
-    string = string.to_s unless string.instance_of?(String) 
-    if string.length < max_length
-      difference = 0
-      difference = max_length - string.length
-      string + (" " * difference)
-    else
-      string
+  def grid
+    def border_top
+      "----+-- DATE --+------------- COMMIT MESSAGE -------------+ HRS + RATE +" + "\n"
     end
-  end
-  def format_hrs(h)
-    compare_length(h, 3)
-  end
-  def format_rate(amt)
-    compare_length("$" + amt.to_s, 4)
-  end
-  def format_all(invoice, line_items)
+    def border_bottom
+      "----+----------+------------------------------------------+-----+------+" + "\n"
+    end
+    def total
+      "TOTALS:" + (" " * 53) +
+      "#{format_hrs(@invoice.total_hrs)}" + 
+      divider +
+      "#{format_rate(@invoice.total_cost)}" + 
+      "\n"
+    end
     border_top + 
     "\n" +
-    LineItemsView.new.prepare(line_items).join("\n") +
+    LineItemsView.new.prepare(@line_items).join("\n") +
     "\n" * 2 +
     border_bottom + 
-    total(invoice)
+    total
+  end
+  def render
+    header + grid
   end
 end
 
-class LineItemsView < Grid
+class LineItemsView < String
+  include ViewsHelpers
   def format_number(n)
     compare_length(n, 3)
   end
@@ -83,7 +70,8 @@ class LineItemsView < Grid
   def format_msg(m)
     compare_length(m, 40)
   end
-  def prepare(line_items) # Receives an array from LineItemsController
+  def prepare(line_items)
+    # Receives an array from LineItemsController
     line_items.map do |item|
       format_number(item.line_number) + divider +
       format_date(item.date) + divider +
