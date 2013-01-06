@@ -1,9 +1,10 @@
-require_relative 'helpers/views_helpers'
+require 'time'
+require_relative 'helpers/views_helper'
 
-class InvoicesView < String
+class InvoicesView
   include ViewsHelpers
-  def initialize(invoice, line_items, biller, client)
-    @invoice, @line_items, @biller, @client = invoice, line_items, biller, client
+  def initialize(invoice, biller, client)
+    @invoice, @biller, @client = invoice, biller, client
   end
   def header
     def space(chars)
@@ -42,7 +43,7 @@ class InvoicesView < String
       "TOTALS:" + (" " * 53) + "#{format_hrs(@invoice.total_hrs)}" + 
       divider + "#{format_rate(@invoice.total_cost)}" + "\n"
     end
-    border_top + LineItemsView.new.prepare(@line_items).join("\n") +
+    border_top + LineItemsView.new.prepare(@invoice.line_items_array).join("\n") +
     border_bottom + total
   end
   def render
@@ -50,12 +51,14 @@ class InvoicesView < String
   end
 end
 
-class LineItemsView < String
+class LineItemsView
   include ViewsHelpers
   def format_number(n)
     compare_length(n, 3)
   end
   def format_date(d)
+    d = Time.parse(d)
+    d = d.strftime("%m/%d/%y")
     compare_length(d, 8)
   end
   def format_msg(m)

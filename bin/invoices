@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 require 'sqlite3'
-require_relative '../lib/invoices/controllers'
-require_relative '../lib/invoices/views'
-require_relative '../lib/invoices/models'
 require_relative '../lib/invoices/application_controller'
 
 INVOICES_VERSION = '0.0.0'
