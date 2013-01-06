@@ -15,6 +15,6 @@ class BillersController
     biller.zip = $stdin.gets.chomp
     puts "phone >"
     biller.phone = $stdin.gets.chomp
-    biller.add_row_to_billers_table(biller)
+    biller.save
   end
 end

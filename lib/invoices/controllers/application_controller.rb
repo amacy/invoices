@@ -1,4 +1,5 @@
 require 'optparse'
+require_relative 'global'
 require_relative 'controllers/invoices_controller'
 require_relative 'controllers/billers_controller'
 require_relative 'controllers/clients_controller'

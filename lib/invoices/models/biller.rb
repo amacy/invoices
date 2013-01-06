@@ -27,10 +27,11 @@ class Biller
       );
     SQL
   end
-  def add_row_to_billers_table(biller)
+  def save
+    # Should raise error unless all fields except for street2 are filled
     db.execute("INSERT INTO billers 
                (name, street1, street2, city, state, zip, phone) 
                VALUES (?, ?, ?, ?, ?, ?, ?)", 
-               [biller.name, biller.street1, biller.street2, biller.city, biller.state, biller.zip, biller.phone])
+               [@name, @street1, @street2, @city, @state, @zip, @phone])
   end
 end
