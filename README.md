@@ -16,6 +16,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## TO DO LIST
 ### v0.1.0
+- Move LineItem#find_by_invoice_number to Controller
+- Generate a invoices_test.db in spec_helper.rb
+- Move schema & db to db folder
 - Fix initialize methods
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)

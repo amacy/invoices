@@ -32,11 +32,11 @@ class Client
       );
     SQL
   end
-  def add_row_to_clients_table(client)
+  def save
     db.execute("INSERT INTO clients 
                (name, street1, street2, city, state, 
                zip, phone, rate) 
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-               [client.name, client.street1, client.street2, client.city, client.state, client.zip, client.phone, client.rate])
+               [@name, @street1, @street2, @city, @state, @zip, @phone, @rate])
   end
 end

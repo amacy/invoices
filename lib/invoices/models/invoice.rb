@@ -1,15 +1,13 @@
 class Invoice
-  attr_reader :hours, :rate, :number, :date, :format_number, :line_items_array
+  attr_reader :hours, :rate, :number, :date, :format_number, 
+              :line_items_array, :root, :git_log
   attr_accessor :client_id, :total_hrs, :total_cost
   def initialize
     calculate_number
     @line_items_array = []
     @total_hrs = 0
     @total_cost = 0
-  end
-  def date
-    time = Time.now
-    @date = time.month.to_s + "/" + time.day.to_s + "/" + time.year.to_s
+    @date = Time.now.strftime("%m/%d/%y")
   end
   def calculate_number
     def format(x)
@@ -32,18 +30,13 @@ class Invoice
     @format_number = format(i)
   end
   def project_root(file)
-    # Allow relative directories
     @root = File.expand_path(file)
-    # Remove trailing slash
-    length = @root.length
-    @root.slice!((length - 1)..length) if @root[-1] == "/" 
-    @root
   end
   def git_root
-    git_log = IO.readlines("#{@root}/.git/logs/HEAD")
+    @git_log = IO.readlines("#{@root}/.git/logs/HEAD")
     f = File.new("#{@root}/.git/logs/HEAD")
     f.close unless f.closed?
-    git_log.keep_if { |line| line.include?("commit") }
+    @git_log.keep_if { |line| line.include?("commit") }
   end
   def create_invoices_table
     db.execute <<-SQL

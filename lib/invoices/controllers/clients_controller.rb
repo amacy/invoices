@@ -17,6 +17,6 @@ class ClientsController
     client.phone = $stdin.gets.chomp
     puts "hourly rate you'll charge this client >"
     client.rate = $stdin.gets.chomp
-    client.add_row_to_clients_table(client)
+    client.save
   end
 end
