@@ -18,20 +18,6 @@ class Client
       @rate = client[7].to_s
     end
   end
-  def create_clients_table
-    db.execute <<-SQL
-      create table clients (
-        name varchar(30),
-        street1 varchar(30),
-        street2 varchar(30),
-        city varchar(30),
-        state varchar(2),
-        zip varchar(5),
-        phone varchar(14),
-        rate int
-      );
-    SQL
-  end
   def save
     db.execute("INSERT INTO clients 
                (name, street1, street2, city, state, 

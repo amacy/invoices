@@ -38,17 +38,6 @@ class Invoice
     f.close unless f.closed?
     @git_log.keep_if { |line| line.include?("commit") }
   end
-  def create_invoices_table
-    db.execute <<-SQL
-      create table invoices (
-        invoice_number int,
-        date varchar(10),
-        client_id int,
-        total_hrs int,
-        total_cost int
-        );
-    SQL
-  end
   def calculate_total_hrs
     @line_items_array.each do |line_item|
       @total_hrs += line_item.hrs

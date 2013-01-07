@@ -18,19 +18,6 @@ class LineItem
     end
     items
   end
-  def create_line_items_table
-    db.execute <<-SQL
-      create table line_items (
-        invoice_number int,
-        line_number int,
-        commit_date varchar(10),
-        commit_msg varchar,
-        hrs int,
-        rate int,
-        cost int
-        );
-    SQL
-  end
   def save
     db.execute("INSERT INTO line_items 
            (invoice_number, line_number, commit_date, commit_msg, hrs, rate, cost) 

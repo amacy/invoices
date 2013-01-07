@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'sqlite3'
-require_relative '../lib/invoices/application_controller'
+require_relative '../lib/invoices/controllers/application_controller'
 
 app = ApplicationController.new
 # Command Line Prompts

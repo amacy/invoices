@@ -1,27 +1,21 @@
 require 'optparse'
-require_relative 'global'
-require_relative 'controllers/invoices_controller'
-require_relative 'controllers/billers_controller'
-require_relative 'controllers/clients_controller'
-require_relative 'controllers/line_items_controller'
-require_relative 'controllers/commits_controller'
-require_relative 'models/invoice'
-require_relative 'models/biller'
-require_relative 'models/client'
-require_relative 'models/line_item'
-require_relative 'models/commit'
-require_relative 'views/invoices_view'
+require_relative '../global'
+require_relative 'invoices_controller'
+require_relative 'billers_controller'
+require_relative 'clients_controller'
+require_relative 'line_items_controller'
+require_relative 'commits_controller'
+require_relative '../models/invoice'
+require_relative '../models/biller'
+require_relative '../models/client'
+require_relative '../models/line_item'
+require_relative '../models/commit'
+require_relative '../views/invoices_view'
+require_relative '../../../db/schema'
 
 class ApplicationController
   def initialize
-    db # Find/create the db
-    begin
-      Biller.new("").create_billers_table
-      Client.new("").create_clients_table
-      Invoice.new.create_invoices_table
-      #LineItem.new.create_line_items_table
-    rescue SQLite3::SQLException
-    end
+    Schema.new(INVOICES_DB) unless File.exists?('db/invoices.db')
     Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
   end 
   def parse_options

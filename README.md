@@ -6,7 +6,7 @@ My first gem. Also my first offline foray into OOB.
 
 ### License
 The MIT License (MIT)
-Copyright (c) 2012 Aaron Macy (aaronmacy.com)
+Copyright (c) 2013 Aaron Macy (aaronmacy.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -16,9 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## TO DO LIST
 ### v0.1.0
-- Move LineItem#find_by_invoice_number to Controller
-- Generate a invoices_test.db in spec_helper.rb
-- Move schema & db to db folder
+- Replace #db calls with calls to constant
 - Fix initialize methods
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
@@ -36,4 +34,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### Bugs
 - Client names need to be in quotes
-- Database creation methods (called in ApplicationController)
+- Schema doesn't creating working DBs

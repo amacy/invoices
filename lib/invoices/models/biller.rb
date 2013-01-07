@@ -14,19 +14,6 @@ class Biller
       @phone = biller[6].to_s
     end
   end
-  def create_billers_table
-    db.execute <<-SQL
-      create table billers (
-        name varchar(30),
-        street1 varchar(30),
-        street2 varchar(30),
-        city varchar(30),
-        state varchar(2),
-        zip varchar(5),
-        phone varchar(14)
-      );
-    SQL
-  end
   def save
     # Should raise error unless all fields except for street2 are filled
     db.execute("INSERT INTO billers 
