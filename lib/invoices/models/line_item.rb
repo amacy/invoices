@@ -11,15 +11,15 @@ class LineItem
     @cost = @hrs * @rate
   end
   def find_by_invoice_number(invoice_number)
-    items = db.execute("select * from line_items where 
+    items = INVOICES_DB.execute("select * from line_items where 
                        invoice_number = #{invoice_number}")
     items.map! do |line|
       LineItem.new(line[0].to_s, line[1].to_s, line[2], line[3], line[4].to_s, line[5].to_s)
     end
     items
   end
-  def save
-    db.execute("INSERT INTO line_items 
+  def save(*boolean)
+    choose_db(*boolean).execute("INSERT INTO line_items 
            (invoice_number, line_number, commit_date, commit_msg, hrs, rate, cost) 
            VALUES (?, ?, ?, ?, ?, ?, ?)", 
            [@invoice_number, @line_number, @date, @msg, @hrs, @rate, @cost])

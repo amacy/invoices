@@ -1,12 +1,12 @@
 class Client
   attr_accessor :id, :name, :street1, :street2, :city, 
-                :state, :zip, :phone, :rate
+                :state, :zip, :phone, :rate#, :email
   def initialize(name)
     if name.empty?
     else
-      client = db.execute("select * from clients 
+      client = INVOICES_DB.execute("select * from clients 
                           where name = '#{name}'").first
-      @id = db.execute("select rowid from clients 
+      @id = INVOICES_DB.execute("select rowid from clients 
                        where name = '#{name}'").first
       @name = client[0].to_s
       @street1 = client[1].to_s
@@ -15,11 +15,12 @@ class Client
       @state = client[4].to_s
       @zip = client[5].to_s
       @phone = client[6].to_s
+      #@email = client[].to_s
       @rate = client[7].to_s
     end
   end
-  def save
-    db.execute("INSERT INTO clients 
+  def save(*boolean)
+    choose_db(*boolean).execute("INSERT INTO clients 
                (name, street1, street2, city, state, 
                zip, phone, rate) 
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 

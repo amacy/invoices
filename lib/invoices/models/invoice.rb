@@ -50,13 +50,13 @@ class Invoice
     end
     @total_cost
   end
-  def save
+  def save(*boolean)
     calculate_total_hrs
     calculate_total_cost
-    db.execute("INSERT INTO invoices 
+    choose_db(*boolean).execute("INSERT INTO invoices 
                (invoice_number, date, client_id, total_hrs, total_cost) 
                VALUES (?, ?, ?, ?, ?)", 
-               [@calculate_number, @date, @client_id, @total_hrs, @total_cost])
+               [@number, @date, @client_id, @total_hrs, @total_cost])
   end
   def add_line_item(line_item)
     @line_items_array << line_item

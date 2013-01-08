@@ -1,10 +1,10 @@
 class Biller
   attr_accessor :name, :street1, :street2, :city, 
-                :state, :zip, :phone
+                :state, :zip, :phone#, :email
   def initialize(param)
     if param.empty?
     else
-      biller = db.execute("select * from billers").first
+      biller = INVOICES_DB.execute("select * from billers").first
       @name = biller[0].to_s
       @street1 = biller[1].to_s
       @street2 = biller[2].to_s
@@ -12,11 +12,12 @@ class Biller
       @state = biller[4].to_s
       @zip = biller[5].to_s
       @phone = biller[6].to_s
+      #@email
     end
   end
-  def save
+  def save(*boolean)
     # Should raise error unless all fields except for street2 are filled
-    db.execute("INSERT INTO billers 
+    choose_db(*boolean).execute("INSERT INTO billers 
                (name, street1, street2, city, state, zip, phone) 
                VALUES (?, ?, ?, ?, ?, ?, ?)", 
                [@name, @street1, @street2, @city, @state, @zip, @phone])

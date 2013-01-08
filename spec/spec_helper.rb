@@ -6,3 +6,4 @@ require_relative '../db/schema'
 require_relative '../lib/invoices/global'
 
 Schema.new(TEST_DB) unless File.exists?('db/test.db')
+THIS_IS_A_TEST = true

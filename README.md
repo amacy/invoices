@@ -16,14 +16,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## TO DO LIST
 ### v0.1.0
-- Replace #db calls with calls to constant
+- Before running tests, clear database
+- Universalize testing of #project_root
+- Move #generate_line_number from controller to LineItem
+- Review sqlite3 methods http://sqlite-ruby.rubyforge.org/sqlite3/
+- Re-write tests now that there's a test.db 
 - Fix initialize methods
+- rename views_helpers to shared?
 - Allow commit messages to be multiple lines
 - Raise errors where noted (in comments)
 - Add email field to billers & clients
-- Write tests
 - Add custom error messages throughout
-- Write instructions (rdoc)
 
 ### v0.2.0
 - Allow multiple git repos per invoice
@@ -31,6 +34,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - Add ability to regenerate invoices
 - Add ability to preview invoices @ the command line
 - Allow users to select where they want their invoices to be stored
+- Export invoice as PDF
+
+### Some other version
+- Write instructions (rdoc)
 
 ### Bugs
 - Client names need to be in quotes

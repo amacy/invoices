@@ -5,3 +5,6 @@
 
 # Database
 *.db
+
+# Built gem files
+*.gem
