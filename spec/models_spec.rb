@@ -7,6 +7,10 @@ require_relative '../lib/invoices/models/commit'
 
 describe Invoice do
   before do
+    TEST_DB.execute("DELETE FROM billers") # Combining into 1 SQL command
+    TEST_DB.execute("DELETE FROM clients") # was not working
+    TEST_DB.execute("DELETE FROM invoices")
+    TEST_DB.execute("DELETE FROM line_items")
     @invoice = Invoice.new
   end
 
@@ -39,7 +43,6 @@ describe Invoice do
       specify { @invoice.git_log.each { |line| line.must_include "commit" }}
 
       it "should close the git log file" do
-        skip "File is not closing properly"
         assert(File.new(File.expand_path('~/.git/logs/HEAD')).closed?)
       end
 
@@ -57,9 +60,20 @@ describe Invoice do
 
         describe "#save" do
           before do
-            @invoice.save(THIS_IS_A_TEST)
+            @invoice.client_id = 3
+            @invoice.save(true)
           end
           
+          it "should not save empty data" do
+            @invoice.number.must_be :>, 0
+            @invoice.date.wont_be_empty
+            @invoice.client_id.must_be :>, 0
+            @invoice.total_hrs.must_be :>, 0
+            @invoice.total_cost.must_be :>, 0
+          end
+
+          it "should raise an error for invalid data"
+
           it "should call #calculate_total_hrs" do
             @invoice.total_hrs.must_equal 12
           end
@@ -70,7 +84,8 @@ describe Invoice do
 
           describe "#find_by_invoice_number" do
             before do
-              @invoice_query = Invoice.new.find_by_invoice_number
+              @invoice_query = Invoice.new.find_by_invoice_number(@invoice.number, true)
+              @invoice_query.must_be_instance_of Invoice
             end
               
             it "should set instance variables from the database" do
@@ -102,12 +117,13 @@ describe Biller do
 
   describe "#save" do
     before do
-      @biller.save(THIS_IS_A_TEST)
+      @biller.save(true)
     end
 
-    describe "#find_by_name" do
+    describe "#default" do
       before do
-        @biller_query = Biller.new.find_by_name("Aaron Burr")
+        @biller_query = Biller.new.default(true)
+        @biller_query.must_be_instance_of Biller
       end
 
       it "should set instance variables from the database" do
@@ -127,23 +143,28 @@ end
 describe Client do
   before do
     @client = Client.new
+    @client.name = "Alexander Hamilton"
+    @client.street1 = "Wall St"
+    @client.street2 = ""
+    @client.city = "Dover"
+    @client.state = "DE"
+    @client.zip = "55555"
+    @client.phone = "555-555-5555"
+    @client.rate = 100
   end
 
   describe "#save" do
     before do
-      @client.save(THIS_IS_A_TEST)
+      @client.save(true)
     end
 
     describe "#find_by_name" do
       before do
-        @client_query = Biller.new.find_by_name("Alexander Hamilton")
-        @client_query.id = choose_db.execute("select rowid from clients 
-                                     where name = 'Alexander Hamilton'").first
-
+        @client_query = Client.new.find_by_name("Alexander Hamilton", true)
+        @client_query.must_be_instance_of Client
       end
 
       it "should set instance variables from the database" do
-        @client.id.must_equal @client_query.id
         @client.name.must_equal @client_query.name
         @client.street1.must_equal @client_query.street1
         @client.street2.must_equal @client_query.street2
@@ -172,15 +193,15 @@ describe LineItem do
 
   describe "#save" do
     before do
-      @line_item1.save(THIS_IS_A_TEST)
-      @line_item2.save(THIS_IS_A_TEST)
+      @line_item1.save(true)
+      @line_item2.save(true)
     end
 
     describe "#find_by_invoice_number" do
       before do
-        line_item_query = LineItem.new.find_by_invoice_number(7)
-        @line1 = line_item_query.first
-        @line2 = line_item_query.second
+        line_item_query = @line_item1.find_by_invoice_number(7, true)
+        @line1 = line_item_query[0]
+        @line2 = line_item_query[1]
       end
 
       it "should set instance variables from the database" do

@@ -10,11 +10,11 @@ class LineItem
     @rate = rate.to_i
     @cost = @hrs * @rate
   end
-  def find_by_invoice_number(invoice_number)
-    items = INVOICES_DB.execute("select * from line_items where 
+  def find_by_invoice_number(invoice_number, *boolean)
+    items = choose_db(*boolean).execute("select * from line_items where 
                        invoice_number = #{invoice_number}")
     items.map! do |line|
-      LineItem.new(line[0].to_s, line[1].to_s, line[2], line[3], line[4].to_s, line[5].to_s)
+      LineItem.new(line[0], line[1], line[2], line[3], line[4].to_s, line[5].to_s)
     end
     items
   end

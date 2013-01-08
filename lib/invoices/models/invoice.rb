@@ -1,7 +1,6 @@
 class Invoice
-  attr_reader :hours, :rate, :number, :date, :format_number, 
-              :line_items_array, :root, :git_log
-  attr_accessor :client_id, :total_hrs, :total_cost
+  attr_reader :hours, :rate, :format_number, :line_items_array, :root, :git_log
+  attr_accessor :client_id, :total_hrs, :total_cost, :number, :date
   def initialize
     calculate_number
     @line_items_array = []
@@ -60,5 +59,15 @@ class Invoice
   end
   def add_line_item(line_item)
     @line_items_array << line_item
+  end
+  def find_by_invoice_number(invoice_number, *boolean)
+    invoice = choose_db(*boolean).execute("select * from invoices where 
+                       invoice_number = #{invoice_number}").first
+    @number = invoice[0]
+    @date = invoice[1]
+    @client_id = invoice[2]
+    @total_hrs = invoice[3]
+    @total_cost = invoice[4]
+    return self
   end
 end

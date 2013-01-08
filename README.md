@@ -16,19 +16,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## TO DO LIST
 ### v0.1.0
-- Before running tests, clear database
-- Universalize testing of #project_root
+- Fix app now that I've changed "initialize"
 - Move #generate_line_number from controller to LineItem
-- Review sqlite3 methods http://sqlite-ruby.rubyforge.org/sqlite3/
-- Re-write tests now that there's a test.db 
-- Fix initialize methods
 - rename views_helpers to shared?
-- Allow commit messages to be multiple lines
-- Raise errors where noted (in comments)
 - Add email field to billers & clients
-- Add custom error messages throughout
 
 ### v0.2.0
+- Add custom error messages throughout (see comments)
+- Allow commit messages to be > 40 charachters
+- Universalize testing of #project_root
+- Review sqlite3 methods http://sqlite-ruby.rubyforge.org/sqlite3/
 - Allow multiple git repos per invoice
 - Provide control over which commits get added to the invoice
 - Add ability to regenerate invoices
