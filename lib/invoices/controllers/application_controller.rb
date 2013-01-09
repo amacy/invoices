@@ -15,7 +15,7 @@ require_relative '../../../db/schema'
 
 class ApplicationController
   def initialize
-    Schema.new(INVOICES_DB) unless File.exists?('db/invoices.db')
+    Schema.new.create_all_tables(INVOICES_DB)
     Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
   end 
   def parse_options
@@ -34,7 +34,7 @@ class ApplicationController
     subcommands = {
       'invoice' => OptionParser.new do |opt|
         opt.on("-c", "--client CLIENT", "Select the client for this invoice") do |c|
-          client = Client.new(c)
+          client = Client.new.find_by_name(c)
           InvoicesController.new(client)
         end
       end,

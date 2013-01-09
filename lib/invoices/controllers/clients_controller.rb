@@ -1,6 +1,6 @@
 class ClientsController
   def initialize
-    client = Client.new("")
+    client = Client.new
     puts "client name >"
     client.name = $stdin.gets.chomp
     puts "street1 >"

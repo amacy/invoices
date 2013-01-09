@@ -1,6 +1,6 @@
 class InvoicesController
   def initialize(client)
-    @biller = Biller.new("real deal") # Fix this
+    @biller = Biller.new.default
     @invoice = Invoice.new
     @client = client
     @invoice.client_id = @client.id

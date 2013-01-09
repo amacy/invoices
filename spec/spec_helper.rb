@@ -5,4 +5,4 @@ require 'sqlite3'
 require_relative '../db/schema'
 require_relative '../lib/invoices/global'
 
-Schema.new(TEST_DB) unless File.exists?('db/test.db')
+Schema.new.create_all_tables(TEST_DB)

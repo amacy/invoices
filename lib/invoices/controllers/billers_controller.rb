@@ -1,6 +1,6 @@
 class BillersController
   def initialize
-    biller = Biller.new("")
+    biller = Biller.new
     puts "your name >"
     biller.name = $stdin.gets.chomp
     puts "street1 >"
