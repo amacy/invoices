@@ -17,6 +17,14 @@ class Client
     @rate = client[7]
     return self
   end
+  def all
+    clients = choose_db.execute("select * from clients")
+    if clients.instance_of?(Array) && clients != nil
+      clients
+    else
+      raise 'Please create a client'
+    end
+  end
   def save(*boolean)
     choose_db(*boolean).execute("INSERT INTO clients 
                (name, street1, street2, city, state, 

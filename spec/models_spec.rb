@@ -112,7 +112,7 @@ describe Biller do
     @biller.state = "DC"
     @biller.zip = "12345"
     @biller.phone = "Telegram"
-    # email
+    @biller.email = "aburr@example.com"
   end
 
   describe "#save" do
@@ -120,7 +120,7 @@ describe Biller do
       @biller.save(true)
     end
 
-    describe "#default" do
+    describe "#default" do # Write a test for the if/else
       before do
         @biller_query = Biller.new.default(true)
         @biller_query.must_be_instance_of Biller
@@ -134,7 +134,7 @@ describe Biller do
         @biller.state.must_equal @biller_query.state
         @biller.zip.must_equal @biller_query.zip
         @biller.phone.must_equal @biller_query.phone
-        #@biller.email.must_equal @biller_query.email
+        @biller.email.must_equal @biller_query.email
       end
     end
   end
@@ -151,13 +151,14 @@ describe Client do
     @client.zip = "55555"
     @client.phone = "555-555-5555"
     @client.rate = 100
+    @client.email = "ah@example.com"
   end
 
   describe "#save" do
     before do
       @client.save(true)
     end
-
+    # Write a test for #all & the if/else
     describe "#find_by_name" do
       before do
         @client_query = Client.new.find_by_name("Alexander Hamilton", true)
@@ -172,7 +173,7 @@ describe Client do
         @client.state.must_equal @client_query.state
         @client.zip.must_equal @client_query.zip
         @client.phone.must_equal @client_query.phone
-        #@client.email.must_equal @client_query.email
+        @client.email.must_equal @client_query.email
         @client.rate.must_equal @client_query.rate
       end
     end

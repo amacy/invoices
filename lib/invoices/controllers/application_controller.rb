@@ -17,19 +17,20 @@ class ApplicationController
   def initialize
     Schema.new.create_all_tables(INVOICES_DB)
     Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
+    # Verify that there are some records
+    Biller.new.default
+    Client.new.all
   end 
   def parse_options
-    global = OptionParser.new do |opt|
+    options = {}
+    @global = OptionParser.new do |opt|
       opt.banner = "Usage: invoices COMMAND [OPTIONS]"
-      # --new
-      # --list
-      # --reprint
-      opt.on("-v", "--version", "Check the version of 
-             Invoices") do
+      opt.on("-v", "--version", "Check the version of Invoices") do
         puts "v#{INVOICES_VERSION}"
       end
-      #opts.on("-b", "--biller", "Select the biller") do
-      #end
+      opt.on("-h", "--help", "Get some help") do
+        puts @global
+      end
     end
     subcommands = {
       'invoice' => OptionParser.new do |opt|
@@ -49,7 +50,7 @@ class ApplicationController
         end
       end
     }
-    global.order!
+    @global.order!
     subcommands[ARGV.shift].order!
   end
   def parse_commands
@@ -57,6 +58,8 @@ class ApplicationController
     when "invoice"
     when "biller"
     when "client"
+    else
+      puts @global
     end
   end
 end

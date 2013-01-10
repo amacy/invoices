@@ -5,9 +5,9 @@ My first gem. Also my first offline foray into OOB.
 <code>$ gem install invoices</code>
 
 ### Configuration
-<code>invoices biller -n</code>
-<code>invoices client -n</code>
-<code>invoices invoice -c "Client Name"</code>
+<code>$ invoices biller -n</code>
+<code>$ invoices client -n</code>
+<code>$ invoices invoice -c "Client Name"</code>
 
 ### License
 The MIT License (MIT)
@@ -21,22 +21,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## TO DO LIST
 ### v0.1.0
-- Force add a biller & client before creating an invoice
 - Add email field to billers & clients
+- ParseOpt - do something if no command is entered - see gist for CLI improvements - use options = {}
 
-### v0.2.0?
+### Future Features
 - Write Controller tests
+- Prevent invalid data from being saved
 - Add custom error messages throughout (see comments)
   - Client names need to be in quotes (raise exception if they aren't)
 - Allow commit messages to be > 40 characters
 - Universalize testing of #project_root
-- Review sqlite3 methods http://sqlite-ruby.rubyforge.org/sqlite3/
+- [Review sqlite3 gem methods](http://sqlite-ruby.rubyforge.org/sqlite3/)
 - Allow multiple git repos per invoice
 - Provide control over which commits get added to the invoice
 - Add ability to regenerate invoices
 - Add ability to preview invoices @ the command line
 - Allow users to select where they want their invoices to be stored
-- Export invoice as PDF
-- Write instructions (rdoc)
+- Export invoices as PDFs
 
 ### Bugs
