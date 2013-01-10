@@ -1,6 +1,6 @@
 class Client
   attr_accessor :id, :name, :street1, :street2, :city, 
-                :state, :zip, :phone, :rate#, :email
+                :state, :zip, :phone, :rate, :email
   def find_by_name(name, *boolean)
     client = choose_db(*boolean).execute("select * from clients 
                         where name = '#{name}'").first
@@ -13,23 +13,15 @@ class Client
     @state = client[4].to_s
     @zip = client[5].to_s
     @phone = client[6].to_s
-    #@email = client[].to_s
-    @rate = client[7]
+    @email = client[7].to_s
+    @rate = client[8]
     return self
-  end
-  def all
-    clients = choose_db.execute("select * from clients")
-    if clients.instance_of?(Array) && clients != nil
-      clients
-    else
-      raise 'Please create a client'
-    end
   end
   def save(*boolean)
     choose_db(*boolean).execute("INSERT INTO clients 
                (name, street1, street2, city, state, 
-               zip, phone, rate) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-               [@name, @street1, @street2, @city, @state, @zip, @phone, @rate])
+               zip, phone, email, rate) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+               [@name, @street1, @street2, @city, @state, @zip, @phone, @email, @rate])
   end
 end

@@ -19,6 +19,7 @@ describe Invoice do
       @invoice.number.must_be :>, 0 # Also tests #calculate_number
       @invoice.format_number.must_be_instance_of String
       @invoice.date.must_equal Time.now.strftime("%m/%d/%y")
+      @invoice.git_log.must_be_instance_of Array
       @invoice.line_items_array.must_be_instance_of Array
       @invoice.total_hrs.must_equal 0
       @invoice.total_cost.must_equal 0
@@ -41,10 +42,6 @@ describe Invoice do
 
       specify { @invoice.git_log.must_be_instance_of Array }
       specify { @invoice.git_log.each { |line| line.must_include "commit" }}
-
-      it "should close the git log file" do
-        assert(File.new(File.expand_path('~/.git/logs/HEAD')).closed?)
-      end
 
       describe "#add_line_item" do
         before do
@@ -184,12 +181,6 @@ describe LineItem do
   before do
     @line_item1 = LineItem.new(7, 1, Time.now, "Lorem ipsum", 7, 20)
     @line_item2 = LineItem.new(7, 2, Time.now, "Lipsum", 5, 15)
-  end
-
-  describe "#generate_line_number" do
-    it "should add a line number" do
-    skip "this needs to be moved from the controller to the model"
-    end
   end
 
   describe "#save" do

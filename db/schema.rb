@@ -21,7 +21,8 @@ class Schema
         city varchar(30),
         state varchar(2),
         zip varchar(5),
-        phone varchar(14)
+        phone varchar(14),
+        email varchar(30)
       );
     SQL
   end
@@ -35,6 +36,7 @@ class Schema
         state varchar(2),
         zip varchar(5),
         phone varchar(14),
+        email varchar(30),
         rate int
       );
     SQL

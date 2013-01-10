@@ -15,6 +15,8 @@ class ClientsController
     client.zip = $stdin.gets.chomp
     puts "phone >"
     client.phone = $stdin.gets.chomp
+    puts "email >"
+    client.email = $stdin.gets.chomp
     puts "hourly rate you'll charge this client >"
     client.rate = $stdin.gets.chomp
     client.save

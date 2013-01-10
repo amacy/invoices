@@ -14,8 +14,8 @@ class InvoicesController
     @invoice.git_root
   end
   def add_line_items
-    commits = CommitsController.new(@invoice.git_root).index
-    LineItemsController.new(@invoice, commits, @client)
+    commits = CommitsController.new(@invoice.git_log)
+    LineItemsController.new(@invoice, commits.index, @client)
   end
   def create_file
     @invoice.save

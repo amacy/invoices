@@ -1,9 +1,9 @@
 class CommitsController
-  def initialize(git_root)
-    @git_root = git_root
+  def initialize(raw_commits)
+    @raw_commits = raw_commits
   end
   def index 
-    @git_root.map do |line|
+    @raw_commits.map do |line|
       Commit.new(line)
     end
   end

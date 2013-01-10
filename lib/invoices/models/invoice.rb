@@ -4,6 +4,7 @@ class Invoice
   def initialize
     calculate_number
     @line_items_array = []
+    @git_log = []
     @total_hrs = 0
     @total_cost = 0
     @date = Time.now.strftime("%m/%d/%y")
@@ -32,10 +33,11 @@ class Invoice
     @root = File.expand_path(file)
   end
   def git_root
-    @git_log = IO.readlines("#{@root}/.git/logs/HEAD")
-    f = File.new("#{@root}/.git/logs/HEAD")
-    f.close unless f.closed?
-    @git_log.keep_if { |line| line.include?("commit") }
+    File.open("#{@root}/.git/logs/HEAD", "r") do |file|
+      file.each_line do |line|
+        @git_log << line if line.include?("commit")
+      end
+    end
   end
   def calculate_total_hrs
     @line_items_array.each do |line_item|

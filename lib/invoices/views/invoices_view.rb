@@ -24,7 +24,8 @@ class InvoicesView
       line(person.street1, " ") + 
       line(person.street2, " ") +  
       line(person.city + ", " + person.state + " " + person.zip, " ") + 
-      line(person.phone, " ") 
+      line(person.phone, " ") +
+      line(person.email, " ")
     end
     line("INVOICE #" + @invoice.format_number, @invoice.date) + "\n" +
     address(@biller) + "\n" * 2 + 

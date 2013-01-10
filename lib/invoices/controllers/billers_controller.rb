@@ -15,6 +15,8 @@ class BillersController
     biller.zip = $stdin.gets.chomp
     puts "phone >"
     biller.phone = $stdin.gets.chomp
+    puts "email >"
+    biller.email = $stdin.gets.chomp
     biller.save
   end
 end
