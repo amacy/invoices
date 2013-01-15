@@ -10,6 +10,7 @@ Prototype of a command line invoice generator that takes git commit input and sp
 <code>$ invoices invoice -c "Client Name"</code>
 
 ## TO DO LIST
+- add 'init' CL command?
 - Verify that there are records in the database
 - Write Controller tests
 - Prevent invalid data from being saved
