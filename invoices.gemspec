@@ -2,7 +2,7 @@ require 'rake'
 
 Gem::Specification.new do |s|
   s.name        = 'invoices'
-  s.version     = '0.1.0'
+  s.version     = '0.2.0'
   s.summary     = 'Generate invoices at the command line using Git Commits.'
   s.description = 'Generate monospaced .txt invoices at the command line using
                    Git Commits.'

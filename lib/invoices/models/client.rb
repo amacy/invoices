@@ -15,7 +15,7 @@ class Client
     @phone = client[6].to_s
     @email = client[7].to_s
     @rate = client[8]
-    return self
+    self
   end
   def save(*boolean)
     choose_db(*boolean).execute("INSERT INTO clients 

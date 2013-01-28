@@ -70,6 +70,6 @@ class Invoice
     @client_id = invoice[2]
     @total_hrs = invoice[3]
     @total_cost = invoice[4]
-    return self
+    self
   end
 end

@@ -11,7 +11,7 @@ class Biller
     @zip = biller[5].to_s
     @phone = biller[6].to_s
     @email = biller[7].to_s
-    return self
+    self
   end
   def save(*boolean)
     # Should raise error unless all fields except for street2 are filled
