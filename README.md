@@ -31,6 +31,7 @@ Prototype of a command line invoice generator that takes git commit input and sp
 - Export invoices as PDFs
 
 ### Bugs
+- Commit 12 in ~/.git throwing error
 
 ### License
 The MIT License (MIT)
