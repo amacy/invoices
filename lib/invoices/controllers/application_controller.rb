@@ -14,10 +14,12 @@ require_relative '../views/invoices_view'
 require_relative '../../../db/schema'
 
 class ApplicationController
+
   def initialize
     Schema.new.create_all_tables(INVOICES_DB)
     Dir.mkdir(INVOICES_FOLDER) unless File.directory?(INVOICES_FOLDER)
   end 
+
   def parse_options
     options = {}
     subcommand_help = "\nExamples:\nCreate an invoice: invoices invoice -c 'Client Name'\nCreate a biller:   invoices biller -n\nCreate a client:   invoices client -n"
@@ -63,6 +65,7 @@ class ApplicationController
       puts subcommand_help
     end
   end
+
   def parse_commands
     case ARGV[0]
     when "invoice"

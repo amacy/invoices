@@ -1,4 +1,5 @@
 class ClientsController
+
   def initialize
     client = Client.new
     puts "client name >"

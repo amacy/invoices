@@ -1,8 +1,10 @@
 class LineItemsController
+
   def initialize(invoice, commits, client)
     @invoice, @commits_index, @client = invoice, commits, client
     compile_line_items
   end
+
   def compile_line_items
     puts "Would you like to enter a different rate for each commit? (y/n)"
     custom_rate = true if $stdin.gets.chomp == "y"

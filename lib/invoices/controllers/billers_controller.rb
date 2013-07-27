@@ -1,4 +1,5 @@
 class BillersController
+
   def initialize
     biller = Biller.new
     puts "your name >"

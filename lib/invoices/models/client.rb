@@ -1,11 +1,9 @@
 class Client
-  attr_accessor :id, :name, :street1, :street2, :city, 
-                :state, :zip, :phone, :rate, :email
+  attr_accessor :id, :name, :street1, :street2, :city, :state, :zip, :phone, :rate, :email
+
   def find_by_name(name, *boolean)
-    client = choose_db(*boolean).execute("select * from clients 
-                        where name = '#{name}'").first
-    @id = choose_db(*boolean).execute("select rowid from clients 
-                     where name = '#{name}'").first
+    client = choose_db(*boolean).execute("select * from clients where name = '#{name}'").first
+    @id = choose_db(*boolean).execute("select rowid from clients where name = '#{name}'").first
     @name = client[0].to_s
     @street1 = client[1].to_s
     @street2 = client[2].to_s
@@ -17,11 +15,10 @@ class Client
     @rate = client[8]
     self
   end
+
   def save(*boolean)
-    choose_db(*boolean).execute("INSERT INTO clients 
-               (name, street1, street2, city, state, 
-               zip, phone, email, rate) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-               [@name, @street1, @street2, @city, @state, @zip, @phone, @email, @rate])
+    choose_db(*boolean).execute("INSERT INTO clients (name, street1, street2, city, state, zip, phone, email, rate) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+                                [@name, @street1, @street2, @city, @state, @zip, @phone, @email, @rate])
   end
 end

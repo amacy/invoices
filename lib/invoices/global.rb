@@ -4,9 +4,5 @@ INVOICES_DB = SQLite3::Database.new('db/invoices.db')
 TEST_DB = SQLite3::Database.new('db/test.db')
 
 def choose_db(*boolean)
-  if boolean.first
-    TEST_DB
-  else
-    INVOICES_DB
-  end
+  boolean.first ? TEST_DB : INVOICES_DB
 end

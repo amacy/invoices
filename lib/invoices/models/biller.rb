@@ -1,6 +1,6 @@
 class Biller
-  attr_accessor :name, :street1, :street2, :city, 
-                :state, :zip, :phone, :email
+  attr_accessor :name, :street1, :street2, :city, :state, :zip, :phone, :email
+
   def default(*boolean)
     biller = choose_db(*boolean).execute("select * from billers").first
     @name = biller[0].to_s
@@ -13,11 +13,11 @@ class Biller
     @email = biller[7].to_s
     self
   end
+
   def save(*boolean)
     # Should raise error unless all fields except for street2 are filled
-    choose_db(*boolean).execute("INSERT INTO billers 
-               (name, street1, street2, city, state, zip, phone, email) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-               [@name, @street1, @street2, @city, @state, @zip, @phone, @email])
+    choose_db(*boolean).execute("INSERT INTO billers (name, street1, street2, city, state, zip, phone, email) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+                                [@name, @street1, @street2, @city, @state, @zip, @phone, @email])
   end
 end
